@@ -1,7 +1,7 @@
 import React from "react";
 
 const FooterLayout = () => {
-  return <div>FooterLayout</div>;
+  return <div className="container">FooterLayout</div>;
 };
 
 export default FooterLayout;

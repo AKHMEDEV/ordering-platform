@@ -1,17 +1,21 @@
-import { childrenProps } from "@/types";
-import cls from "./main.module.css";
+import { ReactNode } from "react";
 import NavbarLayout from "../Navbar";
 import FooterLayout from "../Footer";
+import { MainWrapper } from "./main.module";
 
-const MainLayout = ({ children }: childrenProps) => {
+interface ChildrenProps {
+  children: ReactNode;
+}
+
+const MainLayout = ({ children }: ChildrenProps) => {
   return (
-    <div className={cls["main-wrapper"]}>
-      <div className="">
+    <MainWrapper>
+      <div>
         <NavbarLayout />
         {children}
       </div>
       <FooterLayout />
-    </div>
+    </MainWrapper>
   );
 };
 
