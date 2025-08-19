@@ -1,32 +1,46 @@
 import styled, { keyframes } from "styled-components";
 
 const fadeIn = keyframes`
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
 `;
 
 export const StyledNavbar = styled.div`
+  position: sticky;
+  top: 0;
+  width: 100%;
+  z-index: 100;
+
+  &.visible {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+
+  &.hidden {
+    opacity: 0;
+    transform: translateY(-100%);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+
   .navbar {
     display: flex;
     align-items: center;
     justify-content: space-between;
     margin: 10px auto;
     font-family: "Quicksand", sans-serif;
-    width: 85%;
+    width: 80%;
     max-width: 1428px;
     padding: 15px 30px;
-    background-color: #ffff;
-    backdrop-filter: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    height: 61px;
-    border-radius: 16px;
+    height: 60px;
+    border-radius: 24px;
     animation: ${fadeIn} 0.8s ease forwards;
+    transition: background-color 0.8s ease, backdrop-filter 0.8s ease,
+      box-shadow 0.8s ease;
   }
 
   .logo {
@@ -38,7 +52,7 @@ export const StyledNavbar = styled.div`
   }
 
   .logoHighlight {
-    color: #e67e22;
+    color: #ff9b00;
     margin-left: 5px;
   }
 
@@ -60,11 +74,11 @@ export const StyledNavbar = styled.div`
     font-size: 16px;
     font-weight: 500;
     padding: 8px 15px;
-    border-radius: 20px;
-    transition: all 0.3s ease, transform 0.2s ease;
+    border-radius: 24px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    transition: background-color 0.6s ease, color 0.6s ease, transform 0.2s ease;
   }
 
   .navLink:hover {
@@ -73,7 +87,7 @@ export const StyledNavbar = styled.div`
   }
 
   .navLink.active {
-    background-color: #e67e22;
+    background-color: #ff9b00;
     color: #ffffff;
   }
 
@@ -84,10 +98,10 @@ export const StyledNavbar = styled.div`
     padding: 8px 20px;
     border-radius: 20px;
     font-weight: 600;
-    transition: all 0.3s ease, transform 0.2s ease;
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    transition: background-color 0.4s ease, transform 0.2s ease;
   }
 
   .navButton:hover {
@@ -100,7 +114,7 @@ export const StyledNavbar = styled.div`
     align-items: center;
     padding: 6px;
     border-radius: 50%;
-    transition: background-color 0.3s ease, transform 0.2s ease;
+    transition: background-color 0.6s ease, transform 0.2s ease;
   }
 
   .basketIcon {
@@ -125,6 +139,7 @@ export const StyledNavbar = styled.div`
 
   .activeBasket {
     background-color: #e67e22;
+    transition: background-color 0.6s ease;
   }
 
   .activeBasket .basketIcon {

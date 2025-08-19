@@ -13,9 +13,10 @@ export const GlobalStyles = createGlobalStyle`
   }
 
   .container {
-    width: 100%;
+    width: 80%;
     max-width: 1428px;
     margin: 0 auto;
-    padding: 0 15px;
+    padding: 15px 30px;
   }
+
 `;
