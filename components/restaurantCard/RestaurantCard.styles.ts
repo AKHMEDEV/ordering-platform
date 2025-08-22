@@ -14,7 +14,7 @@ export const StyledCard = styled.div`
   transition: all 0.3s ease;
 
   &:hover {
-    transform: scale(1.05);
+    transform: scale(1.03);
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
   }
 
@@ -41,4 +41,5 @@ export const StyledCard = styled.div`
     color: #fff;
     background-color: #ff9b00;
   }
+
 `;

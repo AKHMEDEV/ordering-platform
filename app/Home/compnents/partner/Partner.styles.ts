@@ -13,6 +13,6 @@ export const StyledPartners = styled.div`
 
   .cardsWrapper {
     display: flex;
-    gap: 15px;
+    gap: 25px;
   }
 `;

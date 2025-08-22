@@ -1,8 +1,6 @@
 import styled from "styled-components";
 
 export const StyledRestaurantsList = styled.div`
-  padding: 20px;
-
   h2 {
     font-size: 30px;
     font-family: sans-serif;
