@@ -4,13 +4,6 @@ import { restaurants } from "./data";
 import { StyledRestaurantsList } from "./Restaurant.styles";
 
 const RestaurantsList = () => {
-  const handleClick = (url?: string) => {
-    if (url) {
-      window.open(url, "_blank");
-    } else {
-      console.log("Link mavjud emas");
-    }
-  };
 
   return (
     <StyledRestaurantsList className="container">

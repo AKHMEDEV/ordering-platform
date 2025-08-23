@@ -8,8 +8,6 @@ export const StyledCard = styled.div`
   border-radius: 10px;
   overflow: hidden;
   background: #fff;
-  display: flex;
-  flex-direction: column;
   cursor: pointer;
   transition: all 0.3s ease;
 

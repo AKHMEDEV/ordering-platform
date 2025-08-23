@@ -1,11 +1,8 @@
-import React from 'react'
+import { RestaurantsPage } from "@/app";
+import React from "react";
 
-const RetsurantsPage = () => {
-  return (
-    <div className='container'>
-      <h1>RestaurantsPage</h1>
-    </div>
-  )
-}
+const Restaurants = () => {
+  return <RestaurantsPage />;
+};
 
-export default RetsurantsPage
+export default Restaurants;
