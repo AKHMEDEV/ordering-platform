@@ -43,6 +43,14 @@ export const StyledNavbar = styled.div`
       box-shadow 0.8s ease;
   }
 
+  .profileIcon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    cursor: pointer;
+  }
+
   .logo {
     font-size: 28px;
     font-weight: 700;
@@ -113,7 +121,9 @@ export const StyledNavbar = styled.div`
     display: flex;
     align-items: center;
     padding: 6px;
+    border: 1px solid;
     border-radius: 50%;
+  
     transition: background-color 0.6s ease, transform 0.2s ease;
   }
 

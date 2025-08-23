@@ -9,7 +9,7 @@ export const PasswordWrapper = styled.div`
 
   .formInput {
     width: 100%;
-    padding: 12px 40px 12px 14px; /* o‘ng tarafga icon uchun joy */
+    padding: 12px 40px 12px 14px;
     border-radius: 10px;
     border: 1px solid #ccc;
     font-size: 14px;
@@ -27,7 +27,6 @@ export const PasswordWrapper = styled.div`
     right: 12px;
     cursor: pointer;
     color: #666;
-    transition: color 0.3s ease;
     display: flex;
     align-items: center;
     justify-content: center;

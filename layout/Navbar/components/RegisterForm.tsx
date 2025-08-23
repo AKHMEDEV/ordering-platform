@@ -1,24 +1,47 @@
+"use client";
 import React from "react";
+import { useForm } from "react-hook-form";
+import { useRegister } from "@/hook/useAuth";
+import { FormWrapper } from "./AuthModal.styles";
 import PasswordInput from "@/components/passsword";
 
-const RegisterForm = () => {
+interface RegisterFormProps {
+  onSuccess?: () => void;
+}
+
+interface RegisterInputs {
+  fullName: string;
+  email: string;
+  phone: string;
+  password: string;
+}
+
+const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
+  const { register, handleSubmit } = useForm<RegisterInputs>();
+  const { mutate: registerUser, status } = useRegister();
+
+  const onSubmit = (data: RegisterInputs) => {
+    registerUser(data, {
+      onSuccess: () => {
+        onSuccess?.();
+      },
+    });
+  };
+
   return (
-    <div>
-      <h2>Register</h2>
-      <div className="formGroup">
-        <label className="formLabel">Username</label>
-        <input type="text" className="formInput" placeholder="Enter username" />
-      </div>
-      <div className="formGroup">
-        <label className="formLabel">Email</label>
-        <input type="email" className="formInput" placeholder="Enter email" />
-      </div>
-      <div className="formGroup">
-        <label className="formLabel">Password</label>
-        <PasswordInput placeholder="Enter password" />
-      </div>
-      <button className="submitBtn">Sign Up</button>
-    </div>
+    <FormWrapper onSubmit={handleSubmit(onSubmit)}>
+      <input {...register("fullName")} placeholder="Full Name" required />
+      <input {...register("email")} type="email" placeholder="Email" required />
+      <input {...register("phone")} type="tel" placeholder="Phone" />
+      <PasswordInput
+        name="password"
+        placeholder="Password"
+        register={register}
+      />
+      <button type="submit" disabled={status === "pending"}>
+        {status === "pending" ? "Loading..." : "Sign Up"}
+      </button>
+    </FormWrapper>
   );
 };
 

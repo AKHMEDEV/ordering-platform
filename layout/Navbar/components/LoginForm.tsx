@@ -1,20 +1,41 @@
+"use client";
 import React from "react";
+import { useForm } from "react-hook-form";
+import { useLogin } from "@/hook/useAuth";
+import { FormWrapper } from "./AuthModal.styles";
 import PasswordInput from "@/components/passsword";
 
-const LoginForm = () => {
+interface LoginFormProps {
+  onSuccess?: () => void;
+}
+
+interface LoginInputs {
+  email: string;
+  password: string;
+}
+
+const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
+  const { register, handleSubmit } = useForm<LoginInputs>();
+  const { mutate: loginMutate } = useLogin();
+
+  const onSubmit = (data: LoginInputs) => {
+    loginMutate(data, {
+      onSuccess: () => {
+        onSuccess?.();
+      },
+    });
+  };
+
   return (
-    <div>
-      <h2>Login</h2>
-      <div className="formGroup">
-        <label className="formLabel">Email</label>
-        <input type="email" className="formInput" placeholder="Enter email" />
-      </div>
-      <div className="formGroup">
-        <label className="formLabel">Password</label>
-        <PasswordInput placeholder="Enter password" />
-      </div>
-      <button className="submitBtn">Login</button>
-    </div>
+    <FormWrapper onSubmit={handleSubmit(onSubmit)}>
+      <input {...register("email")} type="email" placeholder="Email" required />
+      <PasswordInput
+        name="password"
+        placeholder="Password"
+        register={register}
+      />
+      <button type="submit">Login</button>
+    </FormWrapper>
   );
 };
 
