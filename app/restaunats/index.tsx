@@ -1,29 +1,14 @@
 "use client";
 import { useRestaurants } from "@/hook/useRestaurants";
-import styled from "styled-components";
 import Link from "next/link";
 import { getImageUrl } from "@/utils/getImageUrl";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation } from "swiper/modules";
+// import "swiper/css";
+// import "swiper/css/navigation";
 
-const Grid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 20px;
-  padding: 20px;
-`;
-
-const Card = styled.div`
-  background: #fff;
-  border-radius: 12px;
-  padding: 15px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  cursor: pointer;
-  transition: transform 0.2s ease;
-
-  &:hover {
-    transform: scale(1.03);
-  }
-`;
+import * as S from "./Restaurant.styles";
+import { Heart } from "lucide-react";
 
 export default function RestaurantsPage() {
   const { data: restaurants, isLoading } = useRestaurants();
@@ -31,27 +16,49 @@ export default function RestaurantsPage() {
   if (isLoading) return <p>Loading...</p>;
 
   return (
-    <div>
-      <h1>Restaurants</h1>
-      <Grid>
+    <S.Wrapper>
+      <S.Title>🍴 Restaurants</S.Title>
+      <S.Grid>
         {restaurants?.map((r) => (
           <Link href={`/restaurants/${r.id}`} key={r.id}>
-            <Card>
-              <img
-                src={getImageUrl(r.images?.[0])}
-                alt={r.name}
-                style={{ width: "100%", borderRadius: "10px" }}
-              />
-              <h3>{r.name}</h3>
-              <p>{r.description}</p>
-              <p>⭐ {r.rating}</p>
-              <p>
-                {r.openTime} - {r.closeTime}
-              </p>
-            </Card>
+            <S.Card>
+              {/* Swiper for images */}
+              <Swiper
+                modules={[Navigation]}
+                navigation
+                spaceBetween={10}
+                slidesPerView={1}
+              >
+                {r.images?.map((img, i) => (
+                  <SwiperSlide key={i}>
+                    <S.ImageWrapper>
+                      <img src={getImageUrl(img)} alt={`${r.name} ${i}`} />
+                    </S.ImageWrapper>
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+
+              {/* Content */}
+              <S.CardContent>
+                <h3>{r.name}</h3>
+                <p className="description">{r.description}</p>
+
+                <div className="restaurant-stats">
+                  <span className="rating">⭐ {r.rating}</span>
+                  <span className="views">👀 {r.views}</span>
+                  <span className="likes">
+                    <Heart size={16} color="red" /> {r.likeCount}
+                  </span>
+                </div>
+
+                <div className="working-hours">
+                  ⏰ {r.openTime} - {r.closeTime}
+                </div>
+              </S.CardContent>
+            </S.Card>
           </Link>
         ))}
-      </Grid>
-    </div>
+      </S.Grid>
+    </S.Wrapper>
   );
 }

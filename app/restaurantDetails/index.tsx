@@ -2,6 +2,10 @@
 import React from "react";
 import { useRestaurant } from "@/hook/useRestaurants";
 import { getImageUrl } from "@/utils/getImageUrl";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation } from "swiper/modules";
+// import "swiper/css";
+// import "swiper/css/navigation";
 
 const RestaurantDetails: React.FC<{ id: string }> = ({ id }) => {
   const { data: restaurant, isLoading, isError } = useRestaurant(id);
@@ -10,55 +14,52 @@ const RestaurantDetails: React.FC<{ id: string }> = ({ id }) => {
   if (isError || !restaurant) return <p>Restaurant not found</p>;
 
   return (
-    <div style={{ maxWidth: "800px", margin: "0 auto", padding: "20px" }}>
-      <h1>{restaurant.name}</h1>
-      <p>{restaurant.description}</p>
+    <div style={{ maxWidth: "900px", margin: "0 auto", padding: "20px" }}>
+      <h1 style={{ fontSize: "32px", marginBottom: "10px" }}>
+        {restaurant.name}
+      </h1>
+      <p style={{ fontSize: "16px", marginBottom: "15px" }}>
+        {restaurant.description}
+      </p>
+
       <p>
         ⏰ {restaurant.openTime} - {restaurant.closeTime}
       </p>
       <p>⭐ Rating: {restaurant.rating}</p>
       <p>👀 Views: {restaurant.views}</p>
+      <p>❤️ Likes: {restaurant.likeCount}</p>
 
-      {/* Images */}
-      <div
-        style={{
-          display: "flex",
-          gap: "10px",
-          flexWrap: "wrap",
-          marginTop: "20px",
-        }}
+      {/* Swiper for images */}
+      <Swiper
+        modules={[Navigation]}
+        navigation
+        spaceBetween={10}
+        slidesPerView={1}
+        style={{ marginTop: "20px", borderRadius: "12px", overflow: "hidden" }}
       >
-        {restaurant.images?.length ? (
-          restaurant.images.map((img, idx) => (
+        {restaurant.images?.map((img, idx) => (
+          <SwiperSlide key={idx}>
             <img
-              key={idx}
               src={getImageUrl(img)}
               alt={`${restaurant.name}-${idx}`}
               style={{
-                width: "200px",
-                height: "150px",
+                width: "100%",
+                height: "400px",
                 objectFit: "cover",
-                borderRadius: "10px",
               }}
             />
-          ))
-        ) : (
-          <img
-            src="/default-restaurant.jpg"
-            alt={restaurant.name}
-            style={{ width: "200px", height: "150px", borderRadius: "10px" }}
-          />
-        )}
-      </div>
+          </SwiperSlide>
+        ))}
+      </Swiper>
 
       {/* Menus */}
       <div style={{ marginTop: "30px" }}>
-        <h2>🍽 Menu</h2>
+        <h2 style={{ fontSize: "24px", marginBottom: "10px" }}>🍽 Menu</h2>
         {restaurant.menus?.length ? (
-          <ul>
+          <ul style={{ listStyle: "disc", paddingLeft: "20px" }}>
             {restaurant.menus.map((m, idx) => (
               <li key={idx}>
-                {m.name} - ${m.price} {m.isAvailable ? "✅" : "❌"}
+                {m.name} – ${m.price} {m.isAvailable ? "✅" : "❌"}
               </li>
             ))}
           </ul>

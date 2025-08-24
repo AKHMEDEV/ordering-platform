@@ -39,5 +39,4 @@ export const StyledCard = styled.div`
     color: #fff;
     background-color: #ff9b00;
   }
-
 `;
