@@ -2,11 +2,8 @@
 import { useRestaurants } from "@/hook/useRestaurants";
 import Link from "next/link";
 import { getImageUrl } from "@/utils/getImageUrl";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation } from "swiper/modules";
+
 import { useState, useMemo } from "react";
-// import "swiper/css";
-// import "swiper/css/navigation";
 
 export default function RestaurantsPage() {
   const { data: restaurantsResponse, isLoading } = useRestaurants();
@@ -221,14 +218,8 @@ export default function RestaurantsPage() {
         </div>
       )}
 
-      {/* Restaurants Grid */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(380px, 1fr))",
-          gap: "25px",
-        }}
-      >
+      {/* Restaurants List - 1 qator pastma-past */}
+      <div style={{ display: "flex", flexDirection: "column", gap: "25px" }}>
         {filteredAndSortedRestaurants?.map((r) => (
           <Link
             href={`/restaurants/${r.id}`}
@@ -244,9 +235,6 @@ export default function RestaurantsPage() {
                 transition: "all 0.3s ease",
                 cursor: "pointer",
                 border: "1px solid #f1f3f4",
-                height: "100%",
-                display: "flex",
-                flexDirection: "column",
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = "translateY(-5px)";
@@ -257,39 +245,57 @@ export default function RestaurantsPage() {
                 e.currentTarget.style.boxShadow = "0 4px 20px rgba(0,0,0,0.08)";
               }}
             >
-              {/* Image Section */}
-              <div style={{ position: "relative", height: "220px" }}>
-                <Swiper
-                  modules={[Navigation]}
-                  navigation
-                  spaceBetween={0}
-                  slidesPerView={1}
-                  style={{ height: "100%" }}
-                >
-                  {r.images?.map((img, i) => (
-                    <SwiperSlide key={i}>
-                      <img
-                        src={getImageUrl(img)}
-                        alt={`${r.name} ${i}`}
-                        style={{
-                          width: "100%",
-                          height: "100%",
-                          objectFit: "cover",
-                        }}
-                      />
-                    </SwiperSlide>
-                  ))}
-                </Swiper>
+              {/* Top - Image Section */}
+              <div
+                style={{
+                  position: "relative",
+                  height: "400px", // Kattaroq height
+                  width: "100%",
+                }}
+              >
+                {/* Faqat 1 ta rasm ko'rsatamiz, scroll bo'lmasligi uchun */}
+                {r.images && r.images.length > 0 ? (
+                  <img
+                    src={getImageUrl(r.images[0])}
+                    alt={r.name}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                    }}
+                  />
+                ) : (
+                  <div
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      backgroundColor: "#f8f9fa",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      color: "#7f8c8d",
+                      fontSize: "16px",
+                    }}
+                  >
+                    <img
+                      src="/icons/restaurant.png"
+                      alt="No image"
+                      width={48}
+                      height={48}
+                      style={{ opacity: 0.5 }}
+                    />
+                  </div>
+                )}
 
                 {/* Status Badge */}
                 <div
                   style={{
                     position: "absolute",
-                    top: "15px",
-                    right: "15px",
-                    padding: "6px 12px",
+                    top: "20px",
+                    right: "20px",
+                    padding: "8px 16px",
                     borderRadius: "20px",
-                    fontSize: "12px",
+                    fontSize: "13px",
                     fontWeight: "600",
                     backgroundColor: r.isApproved ? "#10b981" : "#f59e0b",
                     color: "white",
@@ -303,15 +309,15 @@ export default function RestaurantsPage() {
                 <div
                   style={{
                     position: "absolute",
-                    bottom: "15px",
-                    left: "15px",
+                    bottom: "20px",
+                    left: "20px",
                     display: "flex",
                     alignItems: "center",
-                    padding: "8px 12px",
+                    padding: "10px 16px",
                     borderRadius: "20px",
                     backgroundColor: "rgba(0,0,0,0.8)",
                     color: "white",
-                    fontSize: "14px",
+                    fontSize: "16px",
                     fontWeight: "600",
                     backdropFilter: "blur(10px)",
                   }}
@@ -319,25 +325,25 @@ export default function RestaurantsPage() {
                   <img
                     src="/icons/star.png"
                     alt="Rating"
-                    width={16}
-                    height={16}
-                    style={{ marginRight: "6px" }}
+                    width={18}
+                    height={18}
+                    style={{ marginRight: "8px" }}
                   />
                   {r.rating || "New"}
                 </div>
 
-                {/* Menu Preview Badge */}
+                {/* Menu Count Badge */}
                 {r.menus && r.menus.length > 0 && (
                   <div
                     style={{
                       position: "absolute",
-                      bottom: "15px",
-                      right: "15px",
-                      padding: "6px 10px",
-                      borderRadius: "16px",
+                      bottom: "20px",
+                      right: "20px",
+                      padding: "8px 16px",
+                      borderRadius: "20px",
                       backgroundColor: "#3b82f6",
                       color: "white",
-                      fontSize: "12px",
+                      fontSize: "14px",
                       fontWeight: "600",
                     }}
                   >
@@ -346,22 +352,19 @@ export default function RestaurantsPage() {
                 )}
               </div>
 
-              {/* Content Section */}
+              {/* Bottom - Content Section */}
               <div
                 style={{
-                  padding: "20px",
-                  flex: 1,
-                  display: "flex",
-                  flexDirection: "column",
+                  padding: "25px",
                 }}
               >
                 {/* Restaurant Name and Description */}
                 <h3
                   style={{
-                    fontSize: "20px",
+                    fontSize: "24px",
                     fontWeight: "700",
                     color: "#2c3e50",
-                    margin: "0 0 8px 0",
+                    margin: "0 0 15px 0",
                     lineHeight: "1.3",
                   }}
                 >
@@ -370,143 +373,135 @@ export default function RestaurantsPage() {
 
                 <p
                   style={{
-                    fontSize: "14px",
+                    fontSize: "16px",
                     color: "#7f8c8d",
-                    margin: "0 0 15px 0",
-                    lineHeight: "1.5",
+                    margin: "0 0 20px 0",
+                    lineHeight: "1.6",
                     display: "-webkit-box",
-                    WebkitLineClamp: 2,
+                    WebkitLineClamp: 3,
                     WebkitBoxOrient: "vertical",
                     overflow: "hidden",
-                    flex: 1,
                   }}
                 >
                   {r.description ||
                     "Experience amazing cuisine and atmosphere at this wonderful restaurant."}
                 </p>
 
-                {/* Menu Preview */}
-                {r.menus && r.menus.length > 0 && (
-                  <div style={{ marginBottom: "15px" }}>
-                    <div
-                      style={{
-                        fontSize: "13px",
-                        color: "#6b7280",
-                        marginBottom: "8px",
-                        fontWeight: "500",
-                      }}
-                    >
-                      Popular Menu Items:
-                    </div>
-                    <div
-                      style={{
-                        display: "flex",
-                        flexWrap: "wrap",
-                        gap: "6px",
-                      }}
-                    >
-                      {r.menus.slice(0, 3).map((menu, idx) => (
-                        <span
-                          key={idx}
-                          style={{
-                            padding: "4px 8px",
-                            backgroundColor: "#f3f4f6",
-                            borderRadius: "12px",
-                            fontSize: "12px",
-                            color: "#374151",
-                            border: "1px solid #e5e7eb",
-                          }}
-                        >
-                          {menu.name} - ${menu.price}
-                        </span>
-                      ))}
-                      {r.menus.length > 3 && (
-                        <span
-                          style={{
-                            padding: "4px 8px",
-                            backgroundColor: "#dbeafe",
-                            borderRadius: "12px",
-                            fontSize: "12px",
-                            color: "#1e40af",
-                            border: "1px solid #bfdbfe",
-                          }}
-                        >
-                          +{r.menus.length - 3} more
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                )}
-
-                {/* Stats Row */}
+                {/* Stats Row - Chap va o'ng tarafga ajratilgan */}
                 <div
                   style={{
                     display: "flex",
                     justifyContent: "space-between",
-                    marginBottom: "15px",
-                    padding: "12px 0",
+                    marginBottom: "20px",
+                    padding: "15px 0",
                     borderTop: "1px solid #f1f3f4",
                     borderBottom: "1px solid #f1f3f4",
                   }}
                 >
-                  <div style={{ display: "flex", alignItems: "center" }}>
-                    <img
-                      src="/icons/eye.png"
-                      alt="Views"
-                      width={16}
-                      height={16}
-                      style={{ marginRight: "6px" }}
-                    />
-                    <span style={{ fontSize: "13px", color: "#7f8c8d" }}>
-                      {r.views}
-                    </span>
+                  {/* Chap taraf - Like, Views, Menu */}
+                  <div style={{ display: "flex", gap: "25px" }}>
+                    <div style={{ display: "flex", alignItems: "center" }}>
+                      <img
+                        src="/icons/eye.png"
+                        alt="Views"
+                        width={18}
+                        height={18}
+                        style={{ marginRight: "8px" }}
+                      />
+                      <span
+                        style={{
+                          fontSize: "14px",
+                          color: "#7f8c8d",
+                          fontWeight: "500",
+                        }}
+                      >
+                        {r.views} views
+                      </span>
+                    </div>
+
+                    <div style={{ display: "flex", alignItems: "center" }}>
+                      <img
+                        src="/icons/heart-outline.png"
+                        alt="Likes"
+                        width={18}
+                        height={18}
+                        style={{ marginRight: "8px" }}
+                      />
+                      <span
+                        style={{
+                          fontSize: "14px",
+                          color: "#7f8c8d",
+                          fontWeight: "500",
+                        }}
+                      >
+                        {r.likeCount} likes
+                      </span>
+                    </div>
+
+                    <div style={{ display: "flex", alignItems: "center" }}>
+                      <img
+                        src="/icons/menu.png"
+                        alt="Menu"
+                        width={18}
+                        height={18}
+                        style={{ marginRight: "8px" }}
+                      />
+                      <span
+                        style={{
+                          fontSize: "14px",
+                          color: "#7f8c8d",
+                          fontWeight: "500",
+                        }}
+                      >
+                        {r.menus?.length || 0} menu items
+                      </span>
+                    </div>
                   </div>
 
-                  <div style={{ display: "flex", alignItems: "center" }}>
-                    <img
-                      src="/icons/heart.png"
-                      alt="Likes"
-                      width={16}
-                      height={16}
-                      style={{ marginRight: "6px" }}
-                    />
-                    <span style={{ fontSize: "13px", color: "#7f8c8d" }}>
-                      {r.likeCount}
-                    </span>
-                  </div>
-
+                  {/* O'ng taraf - Comments */}
                   <div style={{ display: "flex", alignItems: "center" }}>
                     <img
                       src="/icons/comment.png"
                       alt="Comments"
-                      width={16}
-                      height={16}
-                      style={{ marginRight: "6px" }}
+                      width={18}
+                      height={18}
+                      style={{ marginRight: "8px" }}
                     />
-                    <span style={{ fontSize: "13px", color: "#7f8c8d" }}>
-                      {r.comments?.length || 0}
+                    <span
+                      style={{
+                        fontSize: "14px",
+                        color: "#7f8c8d",
+                        fontWeight: "500",
+                      }}
+                    >
+                      {r.comments?.length || 0} comments
                     </span>
                   </div>
                 </div>
 
-                {/* Bottom Row */}
+                {/* Bottom Row - Time and Location */}
                 <div
                   style={{
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",
-                    marginTop: "auto",
                   }}
                 >
                   <div style={{ display: "flex", alignItems: "center" }}>
                     <img
                       src="/icons/clock.png"
                       alt="Time"
-                      width={16}
-                      height={16}
-                      style={{ marginRight: "6px" }}
+                      width={18}
+                      height={18}
+                      style={{ marginRight: "8px" }}
                     />
-                    <span style={{ fontSize: "13px", color: "#7f8c8d" }}>
+                    <span
+                      style={{
+                        fontSize: "14px",
+                        color: "#7f8c8d",
+                        fontWeight: "500",
+                      }}
+                    >
                       {r.openTime} - {r.closeTime}
                     </span>
                   </div>
@@ -515,11 +510,17 @@ export default function RestaurantsPage() {
                     <img
                       src="/icons/location.png"
                       alt="Location"
-                      width={16}
-                      height={16}
-                      style={{ marginRight: "6px" }}
+                      width={18}
+                      height={18}
+                      style={{ marginRight: "8px" }}
                     />
-                    <span style={{ fontSize: "13px", color: "#7f8c8d" }}>
+                    <span
+                      style={{
+                        fontSize: "14px",
+                        color: "#7f8c8d",
+                        fontWeight: "500",
+                      }}
+                    >
                       {r.locationLatitude?.toFixed(2)},{" "}
                       {r.locationLongitude?.toFixed(2)}
                     </span>

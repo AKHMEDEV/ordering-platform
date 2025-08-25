@@ -14,17 +14,23 @@ export interface IRestaurant {
   createdAt: string;
   updatedAt: string;
   likeCount: number;
-
   menus?: IMenu[];
   orders?: any[];
   comments?: IComment[];
 }
 
 export interface IMenu {
+  id: string;
   name: string;
+  description?: string;
   price: number;
+  images: string[];
   isAvailable: boolean;
+  restaurantId: string;
+  categoryId: string;
   views: number;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface IComment {
