@@ -9,17 +9,43 @@ export interface IRestaurant {
   isApproved: boolean;
   openTime?: string;
   closeTime?: string;
+  ownerId: string;
   views: number;
   createdAt: string;
   updatedAt: string;
   likeCount: number;
 
   menus?: IMenu[];
+  orders?: any[];
+  comments?: IComment[];
 }
 
 export interface IMenu {
-  id: string;
   name: string;
   price: number;
   isAvailable: boolean;
+  views: number;
+}
+
+export interface IComment {
+  id: string;
+  content: string;
+  createdAt: string;
+  updatedAt: string;
+  authorId: string;
+  targetType: string;
+  parentId?: string;
+  targetRestaurantId?: string;
+  targetMenuId?: string;
+}
+
+export interface IRestaurantsResponse {
+  message: string;
+  count: number;
+  data: IRestaurant[];
+}
+
+export interface IRestaurantResponse {
+  message: string;
+  data: IRestaurant;
 }

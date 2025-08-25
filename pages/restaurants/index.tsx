@@ -1,4 +1,4 @@
-import { RestaurantsPage } from "@/app";
+import RestaurantsPage from "@/app/restaunats";
 import React from "react";
 
 const Restaurants = () => {

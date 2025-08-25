@@ -1,4 +1,4 @@
-import { RestaurantDetailsPage } from "@/app";
+import RestaurantDetails from "@/app/restaurantDetails";
 import { useRouter } from "next/router";
 import React from "react";
 
@@ -8,7 +8,7 @@ const RestaurantDetailsWrapper = () => {
 
   if (!id) return <p>Loading...</p>;
 
-  return <RestaurantDetailsPage id={id as string} />;
+  return <RestaurantDetails id={id as string} />;
 };
 
 export default RestaurantDetailsWrapper;
