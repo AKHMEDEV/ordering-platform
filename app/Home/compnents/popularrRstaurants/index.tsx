@@ -1,23 +1,22 @@
 import React from "react";
-import RestaurantCard from "@/components/restaurantCard";
 import { restaurants } from "./data";
 import { StyledRestaurantsList } from "./Restaurant.styles";
+import { RestaurantCard } from "@/components";
 
 const RestaurantsList = () => {
-
   return (
     <StyledRestaurantsList className="container">
       <h2>Popular Restaurants</h2>
 
       <div className="grid">
         {restaurants.map((restaurant) => (
-          <div
+          <RestaurantCard
             key={restaurant.id}
-            className="cardWrapper"
-            onClick={() => handleClick(restaurant.link)}
-          >
-            <RestaurantCard name={restaurant.name} img={restaurant.img} />
-          </div>
+            id={restaurant.id}
+            name={restaurant.name}
+            img={restaurant.img}
+            link={restaurant.link}
+          />
         ))}
       </div>
     </StyledRestaurantsList>

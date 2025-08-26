@@ -1,16 +1,20 @@
 "use client";
-import { useRestaurants } from "@/hook/useRestaurants";
+import { useRestaurants, useRestaurantLike } from "@/hook/useRestaurants";
 import Link from "next/link";
 import { getImageUrl } from "@/utils/getImageUrl";
-
+import { useRestaurantComments, useCreateComment } from "@/hook/useComments";
 import { useState, useMemo } from "react";
 
 export default function RestaurantsPage() {
   const { data: restaurantsResponse, isLoading } = useRestaurants();
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("name");
+  const [expandedComments, setExpandedComments] = useState<string | null>(null);
+  const [commentTexts, setCommentTexts] = useState<{ [key: string]: string }>(
+    {}
+  );
 
-  // Search va filter funksiyasi - useMemo ni hook chaqirishdan keyin ishlatamiz
+  // Search va filter funksiyasi
   const filteredAndSortedRestaurants = useMemo(() => {
     if (!restaurantsResponse?.data) return [];
 
@@ -131,12 +135,13 @@ export default function RestaurantsPage() {
       <div
         style={{
           display: "flex",
+          maxHeight: "60px",
           alignItems: "center",
           justifyContent: "space-between",
           marginBottom: "30px",
           padding: "20px",
           backgroundColor: "white",
-          borderRadius: "12px",
+          borderRadius: "20px",
           boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
         }}
       >
@@ -176,386 +181,517 @@ export default function RestaurantsPage() {
             style={{
               padding: "10px 20px",
               border: "1px solid #e1e8ed",
-              borderRadius: "8px",
+              borderRadius: "12px",
               backgroundColor: "white",
               cursor: "pointer",
               fontSize: "14px",
               outline: "none",
             }}
           >
-            <option value="name">Sort by Name</option>
-            <option value="rating">Sort by Rating</option>
-            <option value="views">Sort by Views</option>
-            <option value="likes">Sort by Likes</option>
+            <option value="name">sort by name</option>
+            <option value="rating">sort by rating</option>
+            <option value="views">sort by views</option>
+            <option value="likes">sort by likes</option>
           </select>
         </div>
       </div>
 
-      {/* Search Results Info */}
-      {searchTerm && (
-        <div
-          style={{
-            backgroundColor: "#e3f2fd",
-            padding: "15px 20px",
-            borderRadius: "8px",
-            marginBottom: "20px",
-            border: "1px solid #bbdefb",
-          }}
-        >
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <img
-              src="/icons/search.png"
-              alt="Search"
-              width={20}
-              height={20}
-              style={{ marginRight: "10px" }}
-            />
-            <span style={{ fontSize: "16px", color: "#1976d2" }}>
-              Search results for "{searchTerm}":{" "}
-              {filteredAndSortedRestaurants.length} restaurants found
-            </span>
-          </div>
-        </div>
-      )}
-
-      {/* Restaurants List - 1 qator pastma-past */}
+      {/* Restaurants List */}
       <div style={{ display: "flex", flexDirection: "column", gap: "25px" }}>
         {filteredAndSortedRestaurants?.map((r) => (
-          <Link
-            href={`/restaurants/${r.id}`}
+          <RestaurantCard
             key={r.id}
-            style={{ textDecoration: "none", color: "inherit" }}
-          >
-            <div
-              style={{
-                backgroundColor: "white",
-                borderRadius: "16px",
-                overflow: "hidden",
-                boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
-                transition: "all 0.3s ease",
-                cursor: "pointer",
-                border: "1px solid #f1f3f4",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "translateY(-5px)";
-                e.currentTarget.style.boxShadow = "0 8px 30px rgba(0,0,0,0.15)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "translateY(0)";
-                e.currentTarget.style.boxShadow = "0 4px 20px rgba(0,0,0,0.08)";
-              }}
-            >
-              {/* Top - Image Section */}
+            restaurant={r}
+            expandedComments={expandedComments}
+            setExpandedComments={setExpandedComments}
+            commentTexts={commentTexts}
+            setCommentTexts={setCommentTexts}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ✅ Yangi component — hookni shu yerda ishlatamiz
+function RestaurantCard({
+  restaurant,
+  expandedComments,
+  setExpandedComments,
+  commentTexts,
+  setCommentTexts,
+}: {
+  restaurant: any;
+  expandedComments: string | null;
+  setExpandedComments: React.Dispatch<React.SetStateAction<string | null>>;
+  commentTexts: { [key: string]: string };
+  setCommentTexts: React.Dispatch<
+    React.SetStateAction<{ [key: string]: string }>
+  >;
+}) {
+  const { liked, likeCount, handleToggleLike } = useRestaurantLike(restaurant);
+
+  return (
+    <div key={restaurant.id}>
+      <Link
+        href={`/restaurants/${restaurant.id}`}
+        style={{ textDecoration: "none", color: "inherit" }}
+      >
+        <div
+          style={{
+            backgroundColor: "white",
+            borderRadius: "16px",
+            overflow: "hidden",
+            boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
+            transition: "all 0.3s ease",
+            cursor: "pointer",
+            border: "1px solid #f1f3f4",
+          }}
+        >
+          {/* Top - Image */}
+          <div style={{ position: "relative", height: "400px", width: "100%" }}>
+            {restaurant.images && restaurant.images.length > 0 ? (
+              <img
+                src={getImageUrl(restaurant.images[0])}
+                alt={restaurant.name}
+                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              />
+            ) : (
               <div
                 style={{
-                  position: "relative",
-                  height: "400px", // Kattaroq height
                   width: "100%",
+                  height: "100%",
+                  backgroundColor: "#f8f9fa",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "#7f8c8d",
+                  fontSize: "16px",
                 }}
               >
-                {/* Faqat 1 ta rasm ko'rsatamiz, scroll bo'lmasligi uchun */}
-                {r.images && r.images.length > 0 ? (
+                <img
+                  src="/icons/restaurant.png"
+                  alt="No image"
+                  width={48}
+                  height={48}
+                  style={{ opacity: 0.5 }}
+                />
+              </div>
+            )}
+          </div>
+
+          {/* Bottom - Content */}
+          <div style={{ padding: "25px" }}>
+            <h3
+              style={{
+                fontSize: "24px",
+                fontWeight: "700",
+                color: "black",
+                margin: "0 0 15px 0",
+                lineHeight: "1.3",
+              }}
+            >
+              {restaurant.name}
+            </h3>
+
+            <p
+              style={{
+                fontSize: "16px",
+                color: "#7f8c8d",
+                margin: "0 0 20px 0",
+                lineHeight: "1.6",
+                display: "-webkit-box",
+                WebkitLineClamp: 3,
+                WebkitBoxOrient: "vertical",
+                overflow: "hidden",
+              }}
+            >
+              {restaurant.description ||
+                "Experience amazing cuisine and atmosphere at this wonderful restaurant."}
+            </p>
+
+            {/* Stats Row */}
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                marginBottom: "20px",
+                padding: "15px 0",
+              }}
+            >
+              <div style={{ display: "flex", gap: "25px" }}>
+                <div style={{ display: "flex", alignItems: "center" }}>
                   <img
-                    src={getImageUrl(r.images[0])}
-                    alt={r.name}
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                    }}
+                    src="/icons/eye.png"
+                    alt="Views"
+                    width={18}
+                    height={18}
+                    style={{ marginRight: "4px" }}
                   />
-                ) : (
-                  <div
+                  <span
                     style={{
-                      width: "100%",
-                      height: "100%",
-                      backgroundColor: "#f8f9fa",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
+                      fontSize: "14px",
                       color: "#7f8c8d",
-                      fontSize: "16px",
+                      fontWeight: "500",
                     }}
                   >
-                    <img
-                      src="/icons/restaurant.png"
-                      alt="No image"
-                      width={48}
-                      height={48}
-                      style={{ opacity: 0.5 }}
-                    />
-                  </div>
-                )}
-
-                {/* Status Badge */}
-                <div
-                  style={{
-                    position: "absolute",
-                    top: "20px",
-                    right: "20px",
-                    padding: "8px 16px",
-                    borderRadius: "20px",
-                    fontSize: "13px",
-                    fontWeight: "600",
-                    backgroundColor: r.isApproved ? "#10b981" : "#f59e0b",
-                    color: "white",
-                    boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
-                  }}
-                >
-                  {r.isApproved ? "✓ Approved" : "⏳ Pending"}
+                    {restaurant.views}
+                  </span>
                 </div>
 
-                {/* Rating Badge */}
+                {/* ❤️ Like Toggle */}
                 <div
                   style={{
-                    position: "absolute",
-                    bottom: "20px",
-                    left: "20px",
                     display: "flex",
                     alignItems: "center",
-                    padding: "10px 16px",
-                    borderRadius: "20px",
-                    backgroundColor: "rgba(0,0,0,0.8)",
-                    color: "white",
-                    fontSize: "16px",
-                    fontWeight: "600",
-                    backdropFilter: "blur(10px)",
+                    cursor: "pointer",
+                  }}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleToggleLike();
                   }}
                 >
                   <img
-                    src="/icons/star.png"
-                    alt="Rating"
+                    src={
+                      liked
+                        ? "/icons/love.png"
+                        : "/icons/heart-outline.png"
+                    }
+                    alt="Likes"
+                    width={18}
+                    height={18}
+                    style={{
+                      marginRight: "8px",
+                      filter: liked ? "drop-shadow(0 0 2px red)" : "none",
+                    }}
+                  />
+                  <span
+                    style={{
+                      fontSize: "14px",
+                      color: liked ? "red" : "#7f8c8d",
+                      fontWeight: "500",
+                    }}
+                  >
+                    {likeCount}
+                  </span>
+                </div>
+
+                <div style={{ display: "flex", alignItems: "center" }}>
+                  <img
+                    src="/icons/menu.png"
+                    alt="Menu"
                     width={18}
                     height={18}
                     style={{ marginRight: "8px" }}
                   />
-                  {r.rating || "New"}
-                </div>
-
-                {/* Menu Count Badge */}
-                {r.menus && r.menus.length > 0 && (
-                  <div
+                  <span
                     style={{
-                      position: "absolute",
-                      bottom: "20px",
-                      right: "20px",
-                      padding: "8px 16px",
-                      borderRadius: "20px",
-                      backgroundColor: "#3b82f6",
-                      color: "white",
                       fontSize: "14px",
-                      fontWeight: "600",
+                      color: "#7f8c8d",
+                      fontWeight: "500",
                     }}
                   >
-                    {r.menus.length} Menu Items
-                  </div>
-                )}
-              </div>
-
-              {/* Bottom - Content Section */}
-              <div
-                style={{
-                  padding: "25px",
-                }}
-              >
-                {/* Restaurant Name and Description */}
-                <h3
-                  style={{
-                    fontSize: "24px",
-                    fontWeight: "700",
-                    color: "#2c3e50",
-                    margin: "0 0 15px 0",
-                    lineHeight: "1.3",
-                  }}
-                >
-                  {r.name}
-                </h3>
-
-                <p
-                  style={{
-                    fontSize: "16px",
-                    color: "#7f8c8d",
-                    margin: "0 0 20px 0",
-                    lineHeight: "1.6",
-                    display: "-webkit-box",
-                    WebkitLineClamp: 3,
-                    WebkitBoxOrient: "vertical",
-                    overflow: "hidden",
-                  }}
-                >
-                  {r.description ||
-                    "Experience amazing cuisine and atmosphere at this wonderful restaurant."}
-                </p>
-
-                {/* Stats Row - Chap va o'ng tarafga ajratilgan */}
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    marginBottom: "20px",
-                    padding: "15px 0",
-                    borderTop: "1px solid #f1f3f4",
-                    borderBottom: "1px solid #f1f3f4",
-                  }}
-                >
-                  {/* Chap taraf - Like, Views, Menu */}
-                  <div style={{ display: "flex", gap: "25px" }}>
-                    <div style={{ display: "flex", alignItems: "center" }}>
-                      <img
-                        src="/icons/eye.png"
-                        alt="Views"
-                        width={18}
-                        height={18}
-                        style={{ marginRight: "8px" }}
-                      />
-                      <span
-                        style={{
-                          fontSize: "14px",
-                          color: "#7f8c8d",
-                          fontWeight: "500",
-                        }}
-                      >
-                        {r.views} views
-                      </span>
-                    </div>
-
-                    <div style={{ display: "flex", alignItems: "center" }}>
-                      <img
-                        src="/icons/heart-outline.png"
-                        alt="Likes"
-                        width={18}
-                        height={18}
-                        style={{ marginRight: "8px" }}
-                      />
-                      <span
-                        style={{
-                          fontSize: "14px",
-                          color: "#7f8c8d",
-                          fontWeight: "500",
-                        }}
-                      >
-                        {r.likeCount} likes
-                      </span>
-                    </div>
-
-                    <div style={{ display: "flex", alignItems: "center" }}>
-                      <img
-                        src="/icons/menu.png"
-                        alt="Menu"
-                        width={18}
-                        height={18}
-                        style={{ marginRight: "8px" }}
-                      />
-                      <span
-                        style={{
-                          fontSize: "14px",
-                          color: "#7f8c8d",
-                          fontWeight: "500",
-                        }}
-                      >
-                        {r.menus?.length || 0} menu items
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* O'ng taraf - Comments */}
-                  <div style={{ display: "flex", alignItems: "center" }}>
-                    <img
-                      src="/icons/comment.png"
-                      alt="Comments"
-                      width={18}
-                      height={18}
-                      style={{ marginRight: "8px" }}
-                    />
-                    <span
-                      style={{
-                        fontSize: "14px",
-                        color: "#7f8c8d",
-                        fontWeight: "500",
-                      }}
-                    >
-                      {r.comments?.length || 0} comments
-                    </span>
-                  </div>
-                </div>
-
-                {/* Bottom Row - Time and Location */}
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                  }}
-                >
-                  <div style={{ display: "flex", alignItems: "center" }}>
-                    <img
-                      src="/icons/clock.png"
-                      alt="Time"
-                      width={18}
-                      height={18}
-                      style={{ marginRight: "8px" }}
-                    />
-                    <span
-                      style={{
-                        fontSize: "14px",
-                        color: "#7f8c8d",
-                        fontWeight: "500",
-                      }}
-                    >
-                      {r.openTime} - {r.closeTime}
-                    </span>
-                  </div>
-
-                  <div style={{ display: "flex", alignItems: "center" }}>
-                    <img
-                      src="/icons/location.png"
-                      alt="Location"
-                      width={18}
-                      height={18}
-                      style={{ marginRight: "8px" }}
-                    />
-                    <span
-                      style={{
-                        fontSize: "14px",
-                        color: "#7f8c8d",
-                        fontWeight: "500",
-                      }}
-                    >
-                      {r.locationLatitude?.toFixed(2)},{" "}
-                      {r.locationLongitude?.toFixed(2)}
-                    </span>
-                  </div>
+                    {restaurant.menus?.length || 0} menu items
+                  </span>
                 </div>
               </div>
             </div>
-          </Link>
-        ))}
-      </div>
+          </div>
+        </div>
+      </Link>
 
-      {/* Empty State */}
-      {filteredAndSortedRestaurants.length === 0 && (
-        <div
+      {/* Comments Section */}
+      <RestaurantComments
+        restaurantId={restaurant.id}
+        restaurantName={restaurant.name}
+        expanded={expandedComments === restaurant.id}
+        onToggle={() =>
+          setExpandedComments(
+            expandedComments === restaurant.id ? null : restaurant.id
+          )
+        }
+        commentText={commentTexts[restaurant.id] || ""}
+        onCommentChange={(text) =>
+          setCommentTexts({ ...commentTexts, [restaurant.id]: text })
+        }
+      />
+    </div>
+  );
+}
+
+// RestaurantComments component pastdagidek qoladi...
+
+// Restaurant Comments Component
+function RestaurantComments({
+  restaurantId,
+  restaurantName,
+  expanded,
+  onToggle,
+  commentText,
+  onCommentChange,
+}: {
+  restaurantId: string;
+  restaurantName: string;
+  expanded: boolean;
+  onToggle: () => void;
+  commentText: string;
+  onCommentChange: (text: string) => void;
+}) {
+  const { data: commentsResponse, isLoading } =
+    useRestaurantComments(restaurantId);
+  const createCommentMutation = useCreateComment();
+
+  const comments = commentsResponse?.data || [];
+  const displayedComments = comments.slice(0, 2);
+  const hasMoreComments = comments.length > 2;
+
+  const handleSubmitComment = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!commentText.trim()) return;
+
+    try {
+      await createCommentMutation.mutateAsync({
+        content: commentText,
+        targetId: restaurantId,
+        targetType: "RESTAURANT",
+      });
+      onCommentChange("");
+    } catch (error) {
+      console.error("Error creating comment:", error);
+    }
+  };
+
+  return (
+    <div
+      style={{
+        backgroundColor: "white",
+        marginTop: "5px",
+        borderRadius: "12px",
+        padding: "20px",
+        boxShadow: "0 2px 10px rgba(0,0,0,0.05)",
+        border: "1px solid #e9ecef",
+      }}
+    >
+      {/* Comments Header */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: "15px",
+        }}
+      >
+        <h4
           style={{
-            textAlign: "center",
-            padding: "60px 20px",
-            color: "#7f8c8d",
+            margin: 0,
+            fontSize: "18px",
+            fontWeight: "600",
+            color: "#495057",
           }}
         >
-          <img
-            src="/icons/restaurant.png"
-            alt="No restaurants"
-            width={64}
-            height={64}
-            style={{ marginBottom: "20px", opacity: 0.5 }}
-          />
-          <h3 style={{ margin: "0 0 10px 0", fontSize: "20px" }}>
-            {searchTerm ? "No restaurants found" : "No restaurants available"}
-          </h3>
-          <p style={{ margin: 0, fontSize: "16px" }}>
-            {searchTerm
-              ? `Try adjusting your search for "${searchTerm}"`
-              : "Check back later for new restaurants"}
-          </p>
+          Comments ({comments.length})
+        </h4>
+        <button
+          onClick={onToggle}
+          style={{
+            background: "#007bff",
+            color: "white",
+            border: "none",
+            padding: "8px 16px",
+            borderRadius: "8px",
+            fontSize: "14px",
+            cursor: "pointer",
+            transition: "background 0.2s",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = "#0056b3";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = "#007bff";
+          }}
+        >
+          {expanded ? "Hide" : "Show"} Comments
+        </button>
+      </div>
+
+      {expanded && (
+        <div>
+          {/* Existing Comments */}
+          {isLoading ? (
+            <div style={{ textAlign: "center", padding: "20px" }}>
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mx-auto"></div>
+              <p style={{ marginTop: "10px", color: "#6c757d" }}>
+                Loading comments...
+              </p>
+            </div>
+          ) : (
+            <>
+              {displayedComments.map((comment) => (
+                <div
+                  key={comment.id}
+                  style={{
+                    background: "#f8f9fa",
+                    padding: "10px",
+                    borderRadius: "16px",
+                    marginBottom: "10px",
+                    border: "1px solid #e9ecef",
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      marginBottom: "10px",
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: "32px",
+                        height: "32px",
+                        background: "#ff9500",
+                        color: "white",
+                        borderRadius: "50%",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: "14px",
+                        fontWeight: "600",
+                        marginRight: "12px",
+                      }}
+                    >
+                      {comment.author.fullName.charAt(0)}
+                    </div>
+                    <div>
+                      <div
+                        style={{
+                          fontWeight: "600",
+                          color: "#495057",
+                          fontSize: "14px",
+                        }}
+                      >
+                        {comment.author.fullName}
+                      </div>
+                      <div
+                        style={{
+                          fontSize: "12px",
+                          color: "#6c757d",
+                        }}
+                      >
+                        {`${String(new Date().getDate()).padStart(
+                          2,
+                          "0"
+                        )}.${String(new Date().getMonth() + 1).padStart(
+                          2,
+                          "0"
+                        )}.${new Date().getFullYear()}`}
+                      </div>
+                    </div>
+                  </div>
+                  <p
+                    style={{
+                      margin: 0,
+                      // marginLeft:"50px",
+                      color: "#495057",
+                      lineHeight: "1",
+                      fontSize: "16px",
+                    }}
+                  >
+                    {comment.content}
+                  </p>
+                </div>
+              ))}
+
+              {/* Show More Comments Button */}
+              {hasMoreComments && (
+                <button
+                  style={{
+                    width: "100%",
+                    background: "#6c757d",
+                    color: "white",
+                    border: "none",
+                    padding: "10px",
+                    borderRadius: "8px",
+                    fontSize: "14px",
+                    cursor: "pointer",
+                    marginBottom: "15px",
+                    transition: "background 0.2s",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = "#5a6268";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = "#6c757d";
+                  }}
+                >
+                  View All {comments.length} Comments
+                </button>
+              )}
+
+              {/* Add Comment Form */}
+              <form onSubmit={handleSubmitComment}>
+                <textarea
+                  value={commentText}
+                  onChange={(e) => onCommentChange(e.target.value)}
+                  placeholder={`Write something about ${restaurantName}...`}
+                  rows={3}
+                  style={{
+                    width: "100%",
+                    padding: "12px",
+                    border: "1px solid #ced4da",
+                    borderRadius: "12px",
+                    fontSize: "14px",
+                    resize: "vertical",
+                    marginBottom: "15px",
+                    fontFamily: "inherit",
+                  }}
+                />
+                <div
+                  style={{
+                    display: "flex",
+                    gap: "10px",
+                    justifyContent: "flex-end",
+                  }}
+                >
+                  <button
+                    type="submit"
+                    disabled={
+                      createCommentMutation.isPending || !commentText.trim()
+                    }
+                    style={{
+                      background: "#28a745",
+                      color: "white",
+                      border: "none",
+                      padding: "8px 16px",
+                      borderRadius: "10px",
+                      fontSize: "14px",
+                      cursor: "pointer",
+                      transition: "background 0.2s",
+                    }}
+                    onMouseEnter={(e) => {
+                      if (
+                        !createCommentMutation.isPending &&
+                        commentText.trim()
+                      ) {
+                        e.currentTarget.style.background = "#218838";
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (
+                        !createCommentMutation.isPending &&
+                        commentText.trim()
+                      ) {
+                        e.currentTarget.style.background = "#28a745";
+                      }
+                    }}
+                  >
+                    {createCommentMutation.isPending
+                      ? "Posting..."
+                      : "Post Comment"}
+                  </button>
+                </div>
+              </form>
+            </>
+          )}
         </div>
       )}
     </div>

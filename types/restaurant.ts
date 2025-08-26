@@ -14,6 +14,7 @@ export interface IRestaurant {
   createdAt: string;
   updatedAt: string;
   likeCount: number;
+  liked?: boolean;
   menus?: IMenu[];
   orders?: any[];
   comments?: IComment[];
@@ -54,4 +55,10 @@ export interface IRestaurantsResponse {
 export interface IRestaurantResponse {
   message: string;
   data: IRestaurant;
+}
+
+export interface IToggleLikeResponse {
+  message: string;
+  liked: boolean;
+  likeCount: number;
 }
