@@ -14,6 +14,19 @@ export default function RestaurantsPage() {
     {}
   );
 
+  function formatDateTime(dateString: string) {
+    const date = new Date(dateString);
+
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const year = date.getFullYear();
+
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+
+    return `${day}.${month}.${year} ${hours}:${minutes}`;
+  }
+
   // Search va filter funksiyasi
   const filteredAndSortedRestaurants = useMemo(() => {
     if (!restaurantsResponse?.data) return [];
@@ -65,7 +78,7 @@ export default function RestaurantsPage() {
         <img
           src="/icons/restaurant.png"
           alt="Loading"
-          width={40}
+          width={40}  
           height={40}
           style={{ marginRight: "10px" }}
         />
@@ -352,17 +365,13 @@ function RestaurantCard({
                   }}
                 >
                   <img
-                    src={
-                      liked
-                        ? "/icons/love.png"
-                        : "/icons/heart-outline.png"
-                    }
+                    src={liked ? "/icons/heart.png" : "/icons/heart-outline.png"}
                     alt="Likes"
                     width={18}
                     height={18}
                     style={{
                       marginRight: "8px",
-                      filter: liked ? "drop-shadow(0 0 2px red)" : "none",
+                      filter: liked ? "drop-shadow(0 0 1px red)" : "none",
                     }}
                   />
                   <span
@@ -419,7 +428,7 @@ function RestaurantCard({
   );
 }
 
-// RestaurantComments component pastdagidek qoladi...
+
 
 // Restaurant Comments Component
 function RestaurantComments({
@@ -440,10 +449,16 @@ function RestaurantComments({
   const { data: commentsResponse, isLoading } =
     useRestaurantComments(restaurantId);
   const createCommentMutation = useCreateComment();
+  const [viewAll, setViewAll] = useState(false);
 
   const comments = commentsResponse?.data || [];
-  const displayedComments = comments.slice(0, 2);
-  const hasMoreComments = comments.length > 2;
+
+  // Ko‘rsatiladigan commentlar
+  const displayedComments = expanded
+    ? viewAll
+      ? comments // agar viewAll true bo‘lsa barcha commentlar
+      : comments.slice(0, 2)
+    : [];
 
   const handleSubmitComment = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -491,32 +506,30 @@ function RestaurantComments({
         >
           Comments ({comments.length})
         </h4>
-        <button
-          onClick={onToggle}
-          style={{
-            background: "#007bff",
-            color: "white",
-            border: "none",
-            padding: "8px 16px",
-            borderRadius: "8px",
-            fontSize: "14px",
-            cursor: "pointer",
-            transition: "background 0.2s",
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background = "#0056b3";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = "#007bff";
-          }}
-        >
-          {expanded ? "Hide" : "Show"} Comments
-        </button>
+        {comments.length > 0 && (
+          <button
+            onClick={onToggle}
+            style={{
+              background: "#007bff",
+              color: "white",
+              border: "none",
+              padding: "8px 16px",
+              borderRadius: "8px",
+              fontSize: "14px",
+              cursor: "pointer",
+              transition: "background 0.2s",
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.background = "#0056b3")}
+            onMouseLeave={(e) => (e.currentTarget.style.background = "#007bff")}
+          >
+            {expanded ? "Hide Comments" : "Show Comments"}
+          </button>
+        )}
       </div>
 
+      {/* Comments List */}
       {expanded && (
-        <div>
-          {/* Existing Comments */}
+        <>
           {isLoading ? (
             <div style={{ textAlign: "center", padding: "20px" }}>
               <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mx-auto"></div>
@@ -525,174 +538,161 @@ function RestaurantComments({
               </p>
             </div>
           ) : (
-            <>
-              {displayedComments.map((comment) => (
+            displayedComments.map((comment) => (
+              <div
+                key={comment.id}
+                style={{
+                  background: "#f8f9fa",
+                  padding: "10px",
+                  borderRadius: "16px",
+                  marginBottom: "10px",
+                  border: "1px solid #e9ecef",
+                }}
+              >
                 <div
-                  key={comment.id}
                   style={{
-                    background: "#f8f9fa",
-                    padding: "10px",
-                    borderRadius: "16px",
+                    display: "flex",
+                    alignItems: "center",
                     marginBottom: "10px",
-                    border: "1px solid #e9ecef",
                   }}
                 >
                   <div
                     style={{
+                      width: "32px",
+                      height: "32px",
+                      background: "#ff9500",
+                      color: "white",
+                      borderRadius: "50%",
                       display: "flex",
                       alignItems: "center",
-                      marginBottom: "10px",
+                      justifyContent: "center",
+                      fontSize: "14px",
+                      fontWeight: "600",
+                      marginRight: "12px",
                     }}
                   >
+                    {comment.author.fullName.charAt(0)}
+                  </div>
+                  <div>
                     <div
                       style={{
-                        width: "32px",
-                        height: "32px",
-                        background: "#ff9500",
-                        color: "white",
-                        borderRadius: "50%",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        fontSize: "14px",
                         fontWeight: "600",
-                        marginRight: "12px",
+                        color: "#495057",
+                        fontSize: "14px",
                       }}
                     >
-                      {comment.author.fullName.charAt(0)}
+                      {comment.author.fullName}
                     </div>
-                    <div>
-                      <div
-                        style={{
-                          fontWeight: "600",
-                          color: "#495057",
-                          fontSize: "14px",
-                        }}
-                      >
-                        {comment.author.fullName}
-                      </div>
-                      <div
-                        style={{
-                          fontSize: "12px",
-                          color: "#6c757d",
-                        }}
-                      >
-                        {`${String(new Date().getDate()).padStart(
-                          2,
-                          "0"
-                        )}.${String(new Date().getMonth() + 1).padStart(
-                          2,
-                          "0"
-                        )}.${new Date().getFullYear()}`}
-                      </div>
+                    <div style={{ fontSize: "12px", color: "#6c757d" }}>
+                      {comment.createdAt
+                        ? `${String(
+                            new Date(comment.createdAt).getDate()
+                          ).padStart(2, "0")}.${String(
+                            new Date(comment.createdAt).getMonth() + 1
+                          ).padStart(2, "0")}.${new Date(
+                            comment.createdAt
+                          ).getFullYear()}`
+                        : "⏳!!"}
                     </div>
                   </div>
-                  <p
-                    style={{
-                      margin: 0,
-                      // marginLeft:"50px",
-                      color: "#495057",
-                      lineHeight: "1",
-                      fontSize: "16px",
-                    }}
-                  >
-                    {comment.content}
-                  </p>
                 </div>
-              ))}
-
-              {/* Show More Comments Button */}
-              {hasMoreComments && (
-                <button
+                <p
                   style={{
-                    width: "100%",
-                    background: "#6c757d",
-                    color: "white",
-                    border: "none",
-                    padding: "10px",
-                    borderRadius: "8px",
-                    fontSize: "14px",
-                    cursor: "pointer",
-                    marginBottom: "15px",
-                    transition: "background 0.2s",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = "#5a6268";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = "#6c757d";
+                    margin: 0,
+                    color: "#495057",
+                    lineHeight: "1.4",
+                    fontSize: "16px",
                   }}
                 >
-                  View All {comments.length} Comments
-                </button>
-              )}
-
-              {/* Add Comment Form */}
-              <form onSubmit={handleSubmitComment}>
-                <textarea
-                  value={commentText}
-                  onChange={(e) => onCommentChange(e.target.value)}
-                  placeholder={`Write something about ${restaurantName}...`}
-                  rows={3}
-                  style={{
-                    width: "100%",
-                    padding: "12px",
-                    border: "1px solid #ced4da",
-                    borderRadius: "12px",
-                    fontSize: "14px",
-                    resize: "vertical",
-                    marginBottom: "15px",
-                    fontFamily: "inherit",
-                  }}
-                />
-                <div
-                  style={{
-                    display: "flex",
-                    gap: "10px",
-                    justifyContent: "flex-end",
-                  }}
-                >
-                  <button
-                    type="submit"
-                    disabled={
-                      createCommentMutation.isPending || !commentText.trim()
-                    }
-                    style={{
-                      background: "#28a745",
-                      color: "white",
-                      border: "none",
-                      padding: "8px 16px",
-                      borderRadius: "10px",
-                      fontSize: "14px",
-                      cursor: "pointer",
-                      transition: "background 0.2s",
-                    }}
-                    onMouseEnter={(e) => {
-                      if (
-                        !createCommentMutation.isPending &&
-                        commentText.trim()
-                      ) {
-                        e.currentTarget.style.background = "#218838";
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      if (
-                        !createCommentMutation.isPending &&
-                        commentText.trim()
-                      ) {
-                        e.currentTarget.style.background = "#28a745";
-                      }
-                    }}
-                  >
-                    {createCommentMutation.isPending
-                      ? "Posting..."
-                      : "Post Comment"}
-                  </button>
-                </div>
-              </form>
-            </>
+                  {comment.content}
+                </p>
+              </div>
+            ))
           )}
-        </div>
+
+          {/* View All Button */}
+          {comments.length > 2 && !viewAll && (
+            <button
+              onClick={() => setViewAll(true)}
+              style={{
+                width: "100%",
+                background: "#6c757d",
+                color: "white",
+                border: "none",
+                padding: "10px",
+                borderRadius: "8px",
+                fontSize: "14px",
+                cursor: "pointer",
+                marginBottom: "15px",
+                transition: "background 0.2s",
+              }}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.background = "#5a6268")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.background = "#6c757d")
+              }
+            >
+              View All {comments.length} Comments
+            </button>
+          )}
+
+          {/* Add Comment Form */}
+          <form onSubmit={handleSubmitComment}>
+            <textarea
+              value={commentText}
+              onChange={(e) => onCommentChange(e.target.value)}
+              placeholder={`Write something about ${restaurantName}...`}
+              rows={3}
+              style={{
+                width: "100%",
+                padding: "12px",
+                border: "1px solid #ced4da",
+                borderRadius: "12px",
+                fontSize: "14px",
+                resize: "vertical",
+                marginBottom: "15px",
+                fontFamily: "inherit",
+              }}
+            />
+            <div
+              style={{
+                display: "flex",
+                gap: "10px",
+                justifyContent: "flex-end",
+              }}
+            >
+              <button
+                type="submit"
+                disabled={
+                  createCommentMutation.isPending || !commentText.trim()
+                }
+                style={{
+                  background: "#28a745",
+                  color: "white",
+                  border: "none",
+                  padding: "8px 16px",
+                  borderRadius: "10px",
+                  fontSize: "14px",
+                  cursor: "pointer",
+                  transition: "background 0.2s",
+                }}
+                onMouseEnter={(e) => {
+                  if (!createCommentMutation.isPending && commentText.trim())
+                    e.currentTarget.style.background = "#218838";
+                }}
+                onMouseLeave={(e) => {
+                  if (!createCommentMutation.isPending && commentText.trim())
+                    e.currentTarget.style.background = "#28a745";
+                }}
+              >
+                {createCommentMutation.isPending
+                  ? "Posting..."
+                  : "Post Comment"}
+              </button>
+            </div>
+          </form>
+        </>
       )}
     </div>
   );

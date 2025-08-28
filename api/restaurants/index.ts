@@ -1,6 +1,5 @@
 import { customAxios } from "../instances";
 import {
-  IRestaurant,
   IRestaurantsResponse,
   IRestaurantResponse,
   IToggleLikeResponse,
@@ -21,9 +20,7 @@ export const getRestaurantById = async (
 };
 
 
-export const toggleRestaurantLike = async (
-  restaurantId: string
-): Promise<IToggleLikeResponse> => {
+export const toggleRestaurantLike = async (restaurantId: string): Promise<IToggleLikeResponse> => {
   const { data } = await customAxios.post<IToggleLikeResponse>(
     "/reaction/toggle-like",
     {

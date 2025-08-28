@@ -9,8 +9,7 @@ export const GlobalStyles = createGlobalStyle`
 
   body {
     font-family: 'Quicksand', sans-serif;
-    background-color: #EEEEEE40;
-  }
+background-color: rgb(248, 249, 250)  }
 
   .container {
     width: 80%;

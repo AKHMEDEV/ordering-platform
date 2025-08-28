@@ -2,11 +2,7 @@
 import React from "react";
 import { useRestaurant } from "@/hook/useRestaurants";
 import { getImageUrl } from "@/utils/getImageUrl";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation } from "swiper/modules";
 import { MenuSection } from "./components";
-// import "swiper/css";
-// import "swiper/css/navigation";
 
 const RestaurantDetails: React.FC<{ id: string }> = ({ id }) => {
   const { data: restaurant, isLoading, isError } = useRestaurant(id);
@@ -85,98 +81,36 @@ const RestaurantDetails: React.FC<{ id: string }> = ({ id }) => {
           }}
         >
           {/* Image Gallery */}
+          {/* Hero Image */}
           <div style={{ position: "relative", height: "450px" }}>
-            <Swiper
-              modules={[Navigation]}
-              navigation
-              spaceBetween={0}
-              slidesPerView={1}
-              style={{ height: "100%" }}
-            >
-              {restaurant.images?.map((img, idx) => (
-                <SwiperSlide key={idx}>
-                  <img
-                    src={getImageUrl(img)}
-                    alt={`${restaurant.name}-${idx}`}
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                    }}
-                  />
-                </SwiperSlide>
-              ))}
-            </Swiper>
-
-            {/* Status Badge */}
-            <div
-              style={{
-                position: "absolute",
-                top: "20px",
-                right: "20px",
-                padding: "8px 16px",
-                borderRadius: "25px",
-                fontSize: "13px",
-                fontWeight: "600",
-                backgroundColor: restaurant.isApproved ? "#10b981" : "#f59e0b",
-                color: "white",
-                boxShadow: "0 2px 10px rgba(0,0,0,0.2)",
-              }}
-            >
-              {restaurant.isApproved ? "✓ Approved" : "⏳ Pending"}
-            </div>
-
-            {/* Rating Badge */}
-            <div
-              style={{
-                position: "absolute",
-                bottom: "20px",
-                left: "20px",
-                display: "flex",
-                alignItems: "center",
-                padding: "10px 16px",
-                borderRadius: "25px",
-                backgroundColor: "rgba(0,0,0,0.8)",
-                color: "white",
-                fontSize: "16px",
-                fontWeight: "600",
-                backdropFilter: "blur(10px)",
-              }}
-            >
+            {restaurant.images && restaurant.images.length > 0 ? (
               <img
-                src="/icons/star.png"
-                alt="Rating"
-                width={20}
-                height={20}
-                style={{ marginRight: "8px" }}
+                src={getImageUrl(restaurant.images[0])}
+                alt={restaurant.name}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                }}
               />
-              {restaurant.rating || "New"}
-            </div>
-
-            {/* Menu Count Badge */}
-            {restaurant.menus && restaurant.menus.length > 0 && (
+            ) : (
               <div
                 style={{
-                  position: "absolute",
-                  bottom: "20px",
-                  right: "20px",
-                  padding: "8px 16px",
-                  borderRadius: "25px",
-                  backgroundColor: "#3b82f6",
-                  color: "white",
-                  fontSize: "14px",
-                  fontWeight: "600",
-                  backdropFilter: "blur(10px)",
+                  width: "100%",
+                  height: "100%",
+                  backgroundColor: "#e9ecef",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
                 }}
               >
                 <img
-                  src="/icons/menu.png"
-                  alt="Menu"
-                  width={18}
-                  height={18}
-                  style={{ marginRight: "6px" }}
+                  src="/icons/restaurant.png"
+                  alt="No Image"
+                  width={80}
+                  height={80}
+                  style={{ opacity: 0.6 }}
                 />
-                {restaurant.menus.length} Menu Items
               </div>
             )}
           </div>
@@ -283,7 +217,7 @@ const RestaurantDetails: React.FC<{ id: string }> = ({ id }) => {
                     color: "#2c3e50",
                   }}
                 >
-                  {restaurant.likeCount}
+                  {restaurant.likeCount || 0}
                 </div>
                 <div style={{ fontSize: "14px", color: "#7f8c8d" }}>Likes</div>
               </div>
@@ -593,7 +527,7 @@ const RestaurantDetails: React.FC<{ id: string }> = ({ id }) => {
                 <div
                   key={comment.id}
                   style={{
-                    border: "1px solid #f1f3f4",
+                    border: "1px solid #454545",
                     padding: "20px",
                     borderRadius: "12px",
                     backgroundColor: "#f8f9fa",
@@ -634,7 +568,16 @@ const RestaurantDetails: React.FC<{ id: string }> = ({ id }) => {
                         Customer
                       </div>
                       <div style={{ fontSize: "12px", color: "#7f8c8d" }}>
-                        {new Date(comment.createdAt).toLocaleDateString()}
+                        {(() => {
+                          const date = new Date(comment.createdAt);
+                          const day = String(date.getDate()).padStart(2, "0");
+                          const month = String(date.getMonth() + 1).padStart(
+                            2,
+                            "0"
+                          );
+                          const year = date.getFullYear();
+                          return `${day}.${month}.${year}`;
+                        })()}
                       </div>
                     </div>
                   </div>

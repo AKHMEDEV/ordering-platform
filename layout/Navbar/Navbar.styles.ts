@@ -155,4 +155,20 @@ export const StyledNavbar = styled.div`
   .activeBasket .basketIcon {
     filter: brightness(0) invert(1);
   }
+
+
+`;
+
+
+export const Prof = styled.div`
+  width: 40px;
+  height: 40px;
+  border: 1px solid black;
+  border-radius: 50%;
+  background-color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  overflow: hidden;
 `;

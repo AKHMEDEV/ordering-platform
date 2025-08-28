@@ -17,7 +17,7 @@ export const useRestaurant = (id: string) => {
   return useQuery<IRestaurant>({
     queryKey: ["restaurants", id],
     queryFn: () => getRestaurantById(id).then((response) => response.data),
-    enabled: !!id, // id bo'lsa chaqiradi
+    enabled: !!id,
   });
 };
 

@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { StyledNavbar } from "./Navbar.styles";
+import { Prof, StyledNavbar } from "./Navbar.styles";
 import basketIcon from "@/assets/icons/basket.png";
 import AuthModal from "./components/AuthModal";
 import { useLogout, useMe } from "@/hook/useAuth";
@@ -33,7 +33,7 @@ const NavbarLayout: React.FC = () => {
     { name: "Favorites", href: "/favorites" },
   ];
 
-  if (isLoading) return null; // loading davrida navbar ko‘rinmaydi
+  if (isLoading) return null;
 
   return (
     <>
@@ -71,17 +71,39 @@ const NavbarLayout: React.FC = () => {
             {me ? (
               <>
                 <li className="navItem">
-                  <button
-                    className="navButton"
-                    onClick={() => router.push("/profile")}
-                  >
-                    {me?.fullName?.split(" ")[0]}
-                  </button>
+                  <Prof onClick={() => router.push("/profile")}>
+                    <img
+                      src="/icons/profile.png"
+                      alt="Profile"
+                      style={{
+                        width: "24px",
+                        height: "24px",
+                        objectFit: "contain",
+                      }}
+                    />
+                  </Prof>
                 </li>
+
                 <li className="navItem">
-                  <button className="navButton" onClick={() => doLogout()}>
-                    Logout
-                  </button>
+                  <div
+                    onClick={() => doLogout()}
+                    style={{
+                      width: "40px",
+                      height: "40px",
+                      borderRadius: "50%",
+                      backgroundColor: "white",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      cursor: "pointer",
+                    }}
+                  >
+                    <img
+                      src="/icons/logout.png"
+                      alt="Logout"
+                      style={{ width: "22px", height: "22px" }}
+                    />
+                  </div>
                 </li>
               </>
             ) : (
@@ -101,7 +123,7 @@ const NavbarLayout: React.FC = () => {
       <AuthModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        defaultType="register"
+        defaultType="login"
       />
     </>
   );

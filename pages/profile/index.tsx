@@ -1,5 +1,9 @@
-import { ProfilePAge } from "@/app";
+import { ProfileWrapper } from "@/app/profile/Profile.styles";
 
 export default function ProfilePage() {
-  return <ProfilePAge />;
+  return (
+    <ProfileWrapper>
+      <h1>Profile Page</h1>
+    </ProfileWrapper>
+  );
 }

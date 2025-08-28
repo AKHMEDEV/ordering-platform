@@ -1,11 +1,8 @@
+import MenusPage from '@/app/menu'
 import React from 'react'
 
 const Menu = () => {
-  return (
-    <div className='container'>
-      <h1>Menu</h1>
-    </div>
-  )
+  return <MenusPage />
 }
 
 export default Menu

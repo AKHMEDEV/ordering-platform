@@ -30,6 +30,7 @@ export interface IMenu {
   restaurantId: string;
   categoryId: string;
   views: number;
+  categoryIds: string[]; // <--- qo‘shildi
   createdAt: string;
   updatedAt: string;
 }

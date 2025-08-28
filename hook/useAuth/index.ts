@@ -10,16 +10,15 @@ import {
   IUser,
 } from "@/types/auth";
 import { getMe, updateUser } from "@/api/user";
+import { IGetMeResponse, IUserProfile } from "@/types/profile";
+
 
 export const useMe = () => {
-  return useQuery<IUser>({
+  return useQuery<IUserProfile>({
     queryKey: ["me"],
     queryFn: async () => {
-      try {
-        return await getMe();
-      } catch (err) {
-        return null as unknown as IUser;
-      }
+      const res: IGetMeResponse = await getMe();
+      return res.data;
     },
     retry: false,
     staleTime: 0,
@@ -39,9 +38,9 @@ export const useUpdateUser = () => {
     }: {
       userId: string;
       payload: Partial<IUser>;
-    }) => updateUser(userId, payload), // api/user da mavjud updateUser funksiyasini chaqiradi
+    }) => updateUser(userId, payload),
     onSuccess: (updatedUser: IUser) => {
-      qc.setQueryData(["me"], updatedUser); // me query-ni yangilash
+      qc.setQueryData(["me"], updatedUser);
     },
     onError: (err) => {
       console.error(err);
@@ -87,8 +86,15 @@ export const useLogin = () => {
         router.push(`/${res.user.role.toLowerCase()}/dashboard`);
       else router.push("/");
     },
+    onError: (error: any) => {
+      // Backenddan kelayotgan xabarni toast bilan chiqarish
+      const message =
+        error?.response?.data?.message || "Login failed. Please try again.";
+      toast.error(message);
+    },
   });
 };
+
 
 // Logout
 export const useLogout = () => {

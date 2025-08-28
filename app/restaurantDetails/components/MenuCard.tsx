@@ -69,9 +69,9 @@ const MenuCard: React.FC<MenuCardProps> = ({ menu }) => {
         <div
           style={{
             position: "absolute",
-            top: "15px",
-            right: "15px",
-            padding: "6px 12px",
+            top: "10px",
+            right: "10px",
+            padding: "4px 8px",
             borderRadius: "20px",
             fontSize: "12px",
             fontWeight: "600",
@@ -79,7 +79,7 @@ const MenuCard: React.FC<MenuCardProps> = ({ menu }) => {
               ? "rgba(16, 185, 129, 0.9)"
               : "rgba(239, 68, 68, 0.9)",
             color: "white",
-            backdropFilter: "blur(10px)",
+            // backdropFilter: "blur(10px)",
           }}
         >
           {menu.isAvailable ? "✓ Available" : "✗ Not Available"}
@@ -89,15 +89,14 @@ const MenuCard: React.FC<MenuCardProps> = ({ menu }) => {
         <div
           style={{
             position: "absolute",
-            bottom: "15px",
-            left: "15px",
-            padding: "8px 16px",
+            bottom: "10px",
+            left: "10px",
+            padding: "4px 16px",
             borderRadius: "20px",
-            fontSize: "18px",
+            fontSize: "12px",
             fontWeight: "700",
             backgroundColor: "rgba(16, 185, 129, 0.9)",
             color: "white",
-            backdropFilter: "blur(10px)",
           }}
         >
           ${menu.price}
@@ -163,7 +162,7 @@ const MenuCard: React.FC<MenuCardProps> = ({ menu }) => {
                 fontWeight: "500",
               }}
             >
-              {menu.views} views
+              {menu.views}
             </span>
           </div>
 
