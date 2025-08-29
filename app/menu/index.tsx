@@ -2,6 +2,7 @@
 import { useMenus, useMenuLike } from "@/hook/useMenus";
 import { useState, useMemo } from "react";
 import { useAddToCart } from "@/hook/useCart";
+import toast from "react-hot-toast";
 import { getImageUrl } from "@/utils/getImageUrl";
 import { IMenu } from "@/types/menus";
 
@@ -187,6 +188,7 @@ export default function MenusPage() {
   );
 }
 
+
 function MenuCard({ menu }: { menu: IMenu }) {
   const { liked, likeCount, toggle } = useMenuLike(menu);
   const addToCart = useAddToCart();
@@ -194,7 +196,23 @@ function MenuCard({ menu }: { menu: IMenu }) {
   const primaryImage: string | null =
     Array.isArray(menu.images) && menu.images.length > 0
       ? getImageUrl(menu.images[0])
-      : null; // default icon ko‘rsatish
+      : null;
+
+  const handleAddToCart = () => {
+    if (!menu.isAvailable) return;
+    addToCart.mutate(
+      { menuId: menu.id, quantity: 1 },
+      {
+        onSuccess: () => {
+          toast.success(`${menu.name} added to basket`);
+        },
+        onError: (err: any) => {
+          const msg = err?.response?.data?.message || "Failed to add to cart";
+          toast.error(msg);
+        },
+      }
+    );
+  };
 
   return (
     <div
@@ -208,16 +226,8 @@ function MenuCard({ menu }: { menu: IMenu }) {
         transition: "all 0.3s ease",
         cursor: "pointer",
       }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.transform = "translateY(-3px)";
-        e.currentTarget.style.boxShadow = "0 12px 28px rgba(0,0,0,0.18)";
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.transform = "translateY(0)";
-        e.currentTarget.style.boxShadow = "0 4px 20px rgba(0,0,0,0.08)";
-      }}
     >
-      {/* Image / Placeholder */}
+      {/* Image */}
       <div
         style={{
           position: "relative",
@@ -281,7 +291,7 @@ function MenuCard({ menu }: { menu: IMenu }) {
         </div>
       </div>
 
-      {/* Menu Info */}
+      {/* Info */}
       <div style={{ padding: 16 }}>
         <h3 style={{ margin: 0, marginBottom: 8 }}>{menu.name}</h3>
         {menu.description && (
@@ -310,7 +320,7 @@ function MenuCard({ menu }: { menu: IMenu }) {
             justifyContent: "space-between",
           }}
         >
-          {/* Views + Likes */}
+          {/* Likes & Views */}
           <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
             <div
               style={{
@@ -343,10 +353,6 @@ function MenuCard({ menu }: { menu: IMenu }) {
                 alt="like"
                 width={18}
                 height={18}
-                style={{
-                  marginRight: "4px",
-                  filter: liked ? "drop-shadow(0 0 1px red)" : "none",
-                }}
               />
               <span style={{ fontSize: 14 }}>{likeCount ?? 0}</span>
             </button>
@@ -354,9 +360,13 @@ function MenuCard({ menu }: { menu: IMenu }) {
 
           {/* Add to Cart */}
           <button
-            onClick={() => addToCart.mutate({ menuId: menu.id, quantity: 1 })}
+            onClick={handleAddToCart}
             style={{
-              background: menu.isAvailable ? "#2563eb" : "#9ca3af",
+              background: menu.isAvailable
+                ? addToCart.isPending
+                  ? "#3b82f6"
+                  : "#2563eb"
+                : "#9ca3af",
               color: "#fff",
               padding: "10px 16px",
               borderRadius: 10,
@@ -364,15 +374,25 @@ function MenuCard({ menu }: { menu: IMenu }) {
               display: "flex",
               alignItems: "center",
               gap: 8,
-              cursor: menu.isAvailable ? "pointer" : "not-allowed",
+              cursor: menu.isAvailable
+                ? addToCart.isPending
+                  ? "wait"
+                  : "pointer"
+                : "not-allowed",
             }}
             disabled={!menu.isAvailable}
           >
             <img src="/icons/add.png" alt="add" width={16} height={16} />
-            {menu.isAvailable ? "Add to Cart" : "Not Available"}
+            {menu.isAvailable
+              ? addToCart.isPending
+                ? "Adding..."
+                : "Add to Cart"
+              : "Not Available"}
           </button>
         </div>
       </div>
     </div>
   );
 }
+
+

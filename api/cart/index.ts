@@ -1,42 +1,31 @@
+import { ICartItem } from "@/types/cart";
 import { customAxios } from "../instances";
-import {
-  IUserCartResponse,
-  IAddToCartDto,
-  IUpdateCartDto,
-  ICartItemResponse,
-} from "@/types/cart";
 
-// GET /cart -> user carts
-export const getCart = async (): Promise<IUserCartResponse> => {
-  const { data } = await customAxios.get<IUserCartResponse>("/cart");
-  return data;
+// GET /cart
+export const getCart = async (): Promise<ICartItem[]> => {
+  const { data } = await customAxios.get("/cart");
+  return data; // massiv qaytadi
 };
 
 // POST /cart/add
-export const addToCart = async (
-  dto: IAddToCartDto
-): Promise<ICartItemResponse> => {
-  const { data } = await customAxios.post<ICartItemResponse>("/cart/add", dto);
-  return data;
+export const addToCart = async (payload: {
+  menuId: string;
+  quantity: number;
+}): Promise<ICartItem> => {
+  const { data } = await customAxios.post("/cart/add", payload);
+  return data; // bitta item qaytadi
 };
 
 // PATCH /cart/update
-export const updateCart = async (
-  dto: IUpdateCartDto
-): Promise<ICartItemResponse> => {
-  const { data } = await customAxios.patch<ICartItemResponse>(
-    "/cart/update",
-    dto
-  );
+export const updateCart = async (payload: {
+  menuId: string;
+  quantity: number;
+}): Promise<ICartItem> => {
+  const { data } = await customAxios.patch("/cart/update", payload);
   return data;
 };
 
 // DELETE /cart/:menuId
-export const removeFromCart = async (
-  menuId: string
-): Promise<ICartItemResponse> => {
-  const { data } = await customAxios.delete<ICartItemResponse>(
-    `/cart/${menuId}`
-  );
-  return data;
+export const removeFromCart = async (menuId: string): Promise<void> => {
+  await customAxios.delete(`/cart/${menuId}`);
 };

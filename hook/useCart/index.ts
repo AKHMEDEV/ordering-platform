@@ -1,51 +1,42 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getCart, addToCart, updateCart, removeFromCart } from "@/api/cart";
-import {
-  IUserCartResponse,
-  IAddToCartDto,
-  IUpdateCartDto,
-  ICartItemResponse,
-} from "@/types/cart";
+import { ICartItem } from "@/types/cart";
 
-// GET carts
 export const useCart = () => {
-  return useQuery<IUserCartResponse>({
+  return useQuery<ICartItem[]>({
     queryKey: ["cart"],
     queryFn: getCart,
-    staleTime: 1000 * 60, // 1 min cache
     refetchOnWindowFocus: true,
+    staleTime: 1000 * 30,
   });
 };
 
-// ADD
 export const useAddToCart = () => {
-  const queryClient = useQueryClient();
-  return useMutation<ICartItemResponse, Error, IAddToCartDto>({
+  const client = useQueryClient();
+  return useMutation({
     mutationFn: addToCart,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["cart"] });
+      client.invalidateQueries({ queryKey: ["cart"] });
     },
   });
 };
 
-// UPDATE
 export const useUpdateCart = () => {
-  const queryClient = useQueryClient();
-  return useMutation<ICartItemResponse, Error, IUpdateCartDto>({
+  const client = useQueryClient();
+  return useMutation({
     mutationFn: updateCart,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["cart"] });
+      client.invalidateQueries({ queryKey: ["cart"] });
     },
   });
 };
 
-// REMOVE
 export const useRemoveFromCart = () => {
-  const queryClient = useQueryClient();
-  return useMutation<ICartItemResponse, Error, string>({
+  const client = useQueryClient();
+  return useMutation({
     mutationFn: removeFromCart,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["cart"] });
+      client.invalidateQueries({ queryKey: ["cart"] });
     },
   });
 };

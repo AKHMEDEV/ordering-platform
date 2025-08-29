@@ -1,7 +1,9 @@
 "use client";
 import React, { useMemo } from "react";
 import { useCart, useUpdateCart, useRemoveFromCart } from "@/hook/useCart";
+import { ICartItem } from "@/types/cart";
 import { getImageUrl } from "@/utils/getImageUrl";
+import { toast } from "react-hot-toast";
 import {
   Wrapper,
   Card,
@@ -16,6 +18,8 @@ import {
   Summary,
   Row,
   PrimaryButton,
+  RemoveButton,
+  EmptyState,
 } from "./Basket,styles";
 
 const Basket: React.FC = () => {
@@ -23,29 +27,45 @@ const Basket: React.FC = () => {
   const updateCart = useUpdateCart();
   const removeFromCart = useRemoveFromCart();
 
-  const items = data?.data || [];
+  const items: ICartItem[] = data || [];
 
   const totals = useMemo(() => {
-    const subtotal = items.reduce(
-      (sum, it) => sum + (it.menu.price || 0) * it.quantity,
-      0
-    );
+    const subtotal = items.reduce((sum: number, it: ICartItem) => {
+      return sum + (it.menu.price || 0) * it.quantity;
+    }, 0);
     const delivery = items.length > 0 ? 3.5 : 0;
     const total = subtotal + delivery;
     return { subtotal, delivery, total };
   }, [items]);
 
   const handleDecrease = (menuId: string, curQty: number) => {
-    if (curQty <= 1) return removeFromCart.mutate(menuId);
-    updateCart.mutate({ menuId, quantity: curQty - 1 });
+    if (curQty <= 1) {
+      removeFromCart.mutate(menuId, {
+        onSuccess: () => toast.success("removed from basket"),
+      });
+    } else {
+      updateCart.mutate(
+        { menuId, quantity: curQty - 1 },
+        {
+          onSuccess: () => toast.success("quantity updated"),
+        }
+      );
+    }
   };
 
   const handleIncrease = (menuId: string, curQty: number) => {
-    updateCart.mutate({ menuId, quantity: curQty + 1 });
+    updateCart.mutate(
+      { menuId, quantity: curQty + 1 },
+      {
+        onSuccess: () => toast.success("quantity updated"),
+      }
+    );
   };
 
   const handleRemove = (menuId: string) => {
-    removeFromCart.mutate(menuId);
+    removeFromCart.mutate(menuId, {
+      onSuccess: () => toast.success("Removed from basket"),
+    });
   };
 
   if (isLoading) {
@@ -62,7 +82,10 @@ const Basket: React.FC = () => {
         <Card>
           <h2 style={{ marginTop: 0 }}>Your Basket</h2>
           {items.length === 0 ? (
-            <Muted>Basket is empty</Muted>
+            <EmptyState>
+              <img src="/icons/empty.png" width={56} height={56} alt="empty" />
+              <div>No items in your basket</div>
+            </EmptyState>
           ) : (
             <List>
               {items.map((it) => (
@@ -80,18 +103,15 @@ const Basket: React.FC = () => {
                     <Muted>
                       ${it.menu.price} · x{it.quantity}
                     </Muted>
-                    <button
-                      onClick={() => handleRemove(it.menuId)}
-                      style={{
-                        border: 0,
-                        background: "transparent",
-                        color: "#ef4444",
-                        cursor: "pointer",
-                        padding: 0,
-                      }}
-                    >
+                    <RemoveButton onClick={() => handleRemove(it.menuId)}>
+                      <img
+                        src="/icons/delete.png"
+                        width={16}
+                        height={16}
+                        alt="remove"
+                      />
                       Remove
-                    </button>
+                    </RemoveButton>
                   </Title>
                   <QtyControls>
                     <IconButton
@@ -145,7 +165,6 @@ const Basket: React.FC = () => {
               width={18}
               height={18}
               alt="pay"
-              style={{ marginRight: 8 }}
             />
             Go to Order
           </PrimaryButton>

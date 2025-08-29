@@ -31,7 +31,7 @@ export const Avatar = styled.div<{ $src?: string | null }>`
   height: 120px;
   border-radius: 50%;
   overflow: hidden;
-  background: #f5f5f5 url(${(p) => p.$src || "/images.png"}) center/cover
+  background: #f5f5f5 url(${(p) => p.$src || "/icons/profile.png"}) center/cover
     no-repeat;
   border: 2px solid #ff9b00;
 `;

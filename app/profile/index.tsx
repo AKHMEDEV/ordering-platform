@@ -72,24 +72,6 @@ const Profile: React.FC = () => {
 
         <Content>
           <Section>
-            <SectionTitle>Recent Comments</SectionTitle>
-            <List>
-              {data.comments.length === 0 && <Muted>No comments yet</Muted>}
-              {data.comments.map((c) => (
-                <ListItem key={c.id}>
-                  <Row>
-                    <strong>{c.restaurant?.name || "Restaurant"}</strong>
-                    <Badge>comment</Badge>
-                  </Row>
-                  <Row>
-                    <Muted>{new Date(c.createdAt).toLocaleString()}</Muted>
-                  </Row>
-                </ListItem>
-              ))}
-            </List>
-          </Section>
-
-          <Section>
             <SectionTitle>Profile Information</SectionTitle>
             <List>
               <ListItem>
@@ -112,6 +94,24 @@ const Profile: React.FC = () => {
                 <strong>Member since</strong>
                 <Muted>{new Date(data.createdAt).toLocaleDateString()}</Muted>
               </ListItem>
+            </List>
+          </Section>
+
+          <Section>
+            <SectionTitle>Recent Comments</SectionTitle>
+            <List>
+              {data.comments.length === 0 && <Muted>No comments yet</Muted>}
+              {data.comments.map((c) => (
+                <ListItem key={c.id}>
+                  <Row>
+                    <strong>{c.restaurant?.name || "Restaurant"}</strong>
+                    <Badge>comment</Badge>
+                  </Row>
+                  <Row>
+                    <Muted>{new Date(c.createdAt).toLocaleString()}</Muted>
+                  </Row>
+                </ListItem>
+              ))}
             </List>
           </Section>
         </Content>

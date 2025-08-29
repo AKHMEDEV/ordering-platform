@@ -11,6 +11,7 @@ const NavbarLayout: React.FC = () => {
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const { data: me, isLoading } = useMe();
   const { mutate: doLogout } = useLogout();
@@ -43,7 +44,23 @@ const NavbarLayout: React.FC = () => {
             Order<span className="logoHighlight">UK</span>
           </div>
 
-          <ul className="navLinks">
+          <button
+            className={`hamburger ${mobileOpen ? "open" : ""}`}
+            aria-label="Toggle navigation"
+            onClick={() => setMobileOpen((p) => !p)}
+          >
+            <img
+              src={mobileOpen ? "/icons/close.png" : "/icons/menu.png"}
+              alt="menu"
+              width={22}
+              height={22}
+            />
+          </button>
+
+          <ul
+            className={`navLinks ${mobileOpen ? "open" : ""}`}
+            onClick={() => setMobileOpen(false)}
+          >
             {navItems.map((item) => (
               <li key={item.name} className="navItem">
                 <Link

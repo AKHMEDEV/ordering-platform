@@ -1,7 +1,7 @@
-export interface ICartMenu {
+export interface IMenu {
   id: string;
   name: string;
-  description?: string;
+  description: string;
   price: number;
   images: string[];
   isAvailable: boolean;
@@ -17,7 +17,7 @@ export interface ICartItem {
   userId: string;
   menuId: string;
   quantity: number;
-  menu: ICartMenu;
+  menu: IMenu;
 }
 
 // POST /cart/add va PATCH /cart/update response

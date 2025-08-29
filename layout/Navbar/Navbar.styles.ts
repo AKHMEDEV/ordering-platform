@@ -43,6 +43,18 @@ export const StyledNavbar = styled.div`
       box-shadow 0.8s ease;
   }
 
+  .hamburger {
+    display: none;
+    border: 0;
+    background: transparent;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+
   .profileIcon {
     width: 36px;
     height: 36px;
@@ -155,8 +167,57 @@ export const StyledNavbar = styled.div`
   .activeBasket .basketIcon {
     filter: brightness(0) invert(1);
   }
-`;
 
+  /* Responsive */
+  @media (max-width: 992px) {
+    .navbar {
+      width: 92%;
+      padding: 12px 16px;
+    }
+
+    .hamburger {
+      display: inline-flex;
+    }
+
+    .navLinks {
+      position: fixed;
+      top: 74px;
+      left: 0;
+      right: 0;
+      background: rgba(255, 255, 255, 0.98);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+      flex-direction: column;
+      padding: 16px;
+      gap: 8px;
+      transform: translateY(-16px);
+      opacity: 0;
+      pointer-events: none;
+      border-bottom-left-radius: 16px;
+      border-bottom-right-radius: 16px;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+
+    .navLinks.open {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .navItem {
+      margin-left: 0;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+    }
+
+    .navLink {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+`;
 
 export const Prof = styled.div`
   width: 40px;
@@ -172,6 +233,6 @@ export const Prof = styled.div`
 
   &:hover {
     background-color: #ff9b00; /* basket hover'iga o‘xshash rang */
-    transform: scale(1.1  );
+    transform: scale(1.1);
   }
 `;
