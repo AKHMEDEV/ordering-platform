@@ -31,7 +31,6 @@ const NavbarLayout: React.FC = () => {
     { name: "Home", href: "/" },
     { name: "Restaurants", href: "/restaurants" },
     { name: "Menu", href: "/menu" },
-    { name: "Favorites", href: "/favorites" },
   ];
 
   if (isLoading) return null;

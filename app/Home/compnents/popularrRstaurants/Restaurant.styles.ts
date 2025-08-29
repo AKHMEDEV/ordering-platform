@@ -16,4 +16,19 @@ export const StyledRestaurantsList = styled.div`
   .cardWrapper {
     cursor: pointer;
   }
+
+  @media (max-width: 480px) {
+    h2 {
+      font-size: 25px;
+      margin: 15px 0;
+    }
+
+    .grid {
+      grid-template-columns: repeat(
+        auto-fill,
+        minmax(200px, 1fr)
+      );
+      gap: 12px;
+    }
+  }
 `;

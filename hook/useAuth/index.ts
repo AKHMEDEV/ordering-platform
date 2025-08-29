@@ -11,7 +11,6 @@ import {
 import { getMe, updateUser } from "@/api/user";
 import { IUserProfile } from "@/types/profile";
 
-
 export const useMe = () => {
   return useQuery<IUserProfile>({
     queryKey: ["me"],
@@ -79,7 +78,6 @@ export const useLogin = () => {
       else router.push("/");
     },
     onError: (error: any) => {
-      // Backenddan kelayotgan xabarni toast bilan chiqarish
       const message =
         error?.response?.data?.message || "Login failed. Please try again.";
       toast.error(message);

@@ -3,6 +3,7 @@ import { useRestaurants, useRestaurantLike } from "@/hook/useRestaurants";
 import Link from "next/link";
 import { getImageUrl } from "@/utils/getImageUrl";
 import { useRestaurantComments, useCreateComment } from "@/hook/useComments";
+import { useMe } from "@/hook/useAuth";
 import { useState, useMemo } from "react";
 
 export default function RestaurantsPage() {
@@ -16,18 +17,14 @@ export default function RestaurantsPage() {
 
   function formatDateTime(dateString: string) {
     const date = new Date(dateString);
-
     const day = String(date.getDate()).padStart(2, "0");
     const month = String(date.getMonth() + 1).padStart(2, "0");
     const year = date.getFullYear();
-
     const hours = String(date.getHours()).padStart(2, "0");
     const minutes = String(date.getMinutes()).padStart(2, "0");
-
     return `${day}.${month}.${year} ${hours}:${minutes}`;
   }
 
-  // Search va filter funksiyasi
   const filteredAndSortedRestaurants = useMemo(() => {
     if (!restaurantsResponse?.data) return [];
 
@@ -42,7 +39,6 @@ export default function RestaurantsPage() {
         )
     );
 
-    // Sort qilish
     switch (sortBy) {
       case "name":
         filtered.sort((a, b) => a.name.localeCompare(b.name));
@@ -78,7 +74,7 @@ export default function RestaurantsPage() {
         <img
           src="/icons/restaurant.png"
           alt="Loading"
-          width={40}  
+          width={40}
           height={40}
           style={{ marginRight: "10px" }}
         />
@@ -98,7 +94,6 @@ export default function RestaurantsPage() {
         minHeight: "100vh",
       }}
     >
-      {/* Header Section */}
       <div
         style={{
           textAlign: "center",
@@ -144,7 +139,6 @@ export default function RestaurantsPage() {
         </p>
       </div>
 
-      {/* Search and Filter Bar */}
       <div
         style={{
           display: "flex",
@@ -209,7 +203,6 @@ export default function RestaurantsPage() {
         </div>
       </div>
 
-      {/* Restaurants List */}
       <div style={{ display: "flex", flexDirection: "column", gap: "25px" }}>
         {filteredAndSortedRestaurants?.map((r) => (
           <RestaurantCard
@@ -226,7 +219,6 @@ export default function RestaurantsPage() {
   );
 }
 
-// ✅ Yangi component — hookni shu yerda ishlatamiz
 function RestaurantCard({
   restaurant,
   expandedComments,
@@ -261,7 +253,6 @@ function RestaurantCard({
             border: "1px solid #f1f3f4",
           }}
         >
-          {/* Top - Image */}
           <div style={{ position: "relative", height: "400px", width: "100%" }}>
             {restaurant.images && restaurant.images.length > 0 ? (
               <img
@@ -293,7 +284,6 @@ function RestaurantCard({
             )}
           </div>
 
-          {/* Bottom - Content */}
           <div style={{ padding: "25px" }}>
             <h3
               style={{
@@ -323,7 +313,6 @@ function RestaurantCard({
                 "Experience amazing cuisine and atmosphere at this wonderful restaurant."}
             </p>
 
-            {/* Stats Row */}
             <div
               style={{
                 display: "flex",
@@ -352,7 +341,6 @@ function RestaurantCard({
                   </span>
                 </div>
 
-                {/* ❤️ Like Toggle */}
                 <div
                   style={{
                     display: "flex",
@@ -365,7 +353,9 @@ function RestaurantCard({
                   }}
                 >
                   <img
-                    src={liked ? "/icons/heart.png" : "/icons/heart-outline.png"}
+                    src={
+                      liked ? "/icons/heart.png" : "/icons/heart-outline.png"
+                    }
                     alt="Likes"
                     width={18}
                     height={18}
@@ -409,7 +399,6 @@ function RestaurantCard({
         </div>
       </Link>
 
-      {/* Comments Section */}
       <RestaurantComments
         restaurantId={restaurant.id}
         restaurantName={restaurant.name}
@@ -428,9 +417,6 @@ function RestaurantCard({
   );
 }
 
-
-
-// Restaurant Comments Component
 function RestaurantComments({
   restaurantId,
   restaurantName,
@@ -449,14 +435,14 @@ function RestaurantComments({
   const { data: commentsResponse, isLoading } =
     useRestaurantComments(restaurantId);
   const createCommentMutation = useCreateComment();
+  const { data: me } = useMe();
   const [viewAll, setViewAll] = useState(false);
 
   const comments = commentsResponse?.data || [];
 
-  // Ko‘rsatiladigan commentlar
   const displayedComments = expanded
     ? viewAll
-      ? comments // agar viewAll true bo‘lsa barcha commentlar
+      ? comments
       : comments.slice(0, 2)
     : [];
 
@@ -481,60 +467,138 @@ function RestaurantComments({
       style={{
         backgroundColor: "white",
         marginTop: "5px",
-        borderRadius: "12px",
-        padding: "20px",
-        boxShadow: "0 2px 10px rgba(0,0,0,0.05)",
+        borderRadius: "16px",
+        padding: "25px",
+        boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
         border: "1px solid #e9ecef",
+        backgroundImage: "linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)",
       }}
     >
-      {/* Comments Header */}
       <div
         style={{
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          marginBottom: "15px",
+          marginBottom: "20px",
+          paddingBottom: "15px",
+          borderBottom: "2px solid #f1f3f4",
         }}
       >
-        <h4
-          style={{
-            margin: 0,
-            fontSize: "18px",
-            fontWeight: "600",
-            color: "#495057",
-          }}
-        >
-          Comments ({comments.length})
-        </h4>
-        {comments.length > 0 && (
-          <button
-            onClick={onToggle}
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <img
+            src="/icons/comment.png"
+            alt="Comments"
+            width={20}
+            height={20}
+            style={{ marginRight: "8px", opacity: 0.7 }}
+          />
+          <h4
             style={{
-              background: "#007bff",
-              color: "white",
-              border: "none",
-              padding: "8px 16px",
-              borderRadius: "8px",
-              fontSize: "14px",
-              cursor: "pointer",
-              transition: "background 0.2s",
+              margin: 0,
+              fontSize: "18px",
+              fontWeight: "600",
+              color: "#495057",
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.background = "#0056b3")}
-            onMouseLeave={(e) => (e.currentTarget.style.background = "#007bff")}
           >
-            {expanded ? "Hide Comments" : "Show Comments"}
-          </button>
-        )}
+            Comments ({comments.length})
+          </h4>
+        </div>
+        <button
+          onClick={onToggle}
+          style={{
+            background: "#007bff",
+            color: "white",
+            border: "none",
+            padding: "8px 16px",
+            borderRadius: "8px",
+            fontSize: "14px",
+            cursor: "pointer",
+            transition: "background 0.2s",
+          }}
+          onMouseEnter={(e) => (e.currentTarget.style.background = "#0056b3")}
+          onMouseLeave={(e) => (e.currentTarget.style.background = "#007bff")}
+        >
+          {expanded ? "Hide Comments" : "Show Comments"}
+        </button>
       </div>
 
-      {/* Comments List */}
       {expanded && (
         <>
           {isLoading ? (
-            <div style={{ textAlign: "center", padding: "20px" }}>
+            <div
+              style={{
+                textAlign: "center",
+                padding: "30px 20px",
+                background: "linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)",
+                borderRadius: "16px",
+                border: "2px dashed #dee2e6",
+                margin: "15px 0",
+              }}
+            >
               <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mx-auto"></div>
-              <p style={{ marginTop: "10px", color: "#6c757d" }}>
+              <p
+                style={{
+                  marginTop: "15px",
+                  color: "#6c757d",
+                  fontSize: "16px",
+                  fontWeight: "500",
+                }}
+              >
                 Loading comments...
+              </p>
+              <p
+                style={{
+                  margin: "8px 0 0 0",
+                  color: "#adb5bd",
+                  fontSize: "14px",
+                }}
+              >
+                Please wait while we fetch the latest comments
+              </p>
+            </div>
+          ) : comments.length === 0 ? (
+            <div
+              style={{
+                textAlign: "center",
+                padding: "30px 20px",
+                background: "linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)",
+                borderRadius: "16px",
+                border: "2px dashed #dee2e6",
+                margin: "15px 0",
+              }}
+            >
+              <img
+                src="/icons/comment.png"
+                alt="No comments"
+                width={48}
+                height={48}
+                style={{
+                  opacity: 0.6,
+                  marginBottom: "15px",
+                  filter: "grayscale(30%)",
+                }}
+              />
+              <p
+                style={{
+                  margin: 0,
+                  color: "#495057",
+                  fontSize: "18px",
+                  fontWeight: "600",
+                }}
+              >
+                No comments yet
+              </p>
+              <p
+                style={{
+                  margin: "8px 0 0 0",
+                  color: "#6c757d",
+                  fontSize: "14px",
+                  lineHeight: "1.4",
+                }}
+              >
+                {me
+                  ? "Be the first to share your thoughts about this restaurant!"
+                  : "Sign in to be the first to comment!"}
               </p>
             </div>
           ) : (
@@ -547,6 +611,18 @@ function RestaurantComments({
                   borderRadius: "16px",
                   marginBottom: "10px",
                   border: "1px solid #e9ecef",
+                  transition: "all 0.2s ease",
+                  cursor: "default",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = "#e9ecef";
+                  e.currentTarget.style.transform = "translateY(-1px)";
+                  e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.1)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = "#f8f9fa";
+                  e.currentTarget.style.transform = "translateY(0)";
+                  e.currentTarget.style.boxShadow = "none";
                 }}
               >
                 <div
@@ -569,9 +645,12 @@ function RestaurantComments({
                       fontSize: "14px",
                       fontWeight: "600",
                       marginRight: "12px",
+                      textTransform: "uppercase",
                     }}
                   >
-                    {comment.author.fullName.charAt(0)}
+                    {comment.author?.fullName
+                      ? comment.author.fullName.charAt(0)
+                      : "?"}
                   </div>
                   <div>
                     <div
@@ -581,7 +660,7 @@ function RestaurantComments({
                         fontSize: "14px",
                       }}
                     >
-                      {comment.author.fullName}
+                      {comment.author?.fullName || "Anonymous User"}
                     </div>
                     <div style={{ fontSize: "12px", color: "#6c757d" }}>
                       {comment.createdAt
@@ -592,7 +671,7 @@ function RestaurantComments({
                           ).padStart(2, "0")}.${new Date(
                             comment.createdAt
                           ).getFullYear()}`
-                        : "⏳!!"}
+                        : "Date unavailable"}
                     </div>
                   </div>
                 </div>
@@ -600,18 +679,18 @@ function RestaurantComments({
                   style={{
                     margin: 0,
                     color: "#495057",
-                    lineHeight: "1.4",
-                    fontSize: "16px",
+                    lineHeight: "1.5",
+                    fontSize: "15px",
+                    wordBreak: "break-word",
                   }}
                 >
-                  {comment.content}
+                  {comment.content || "No content available"}
                 </p>
               </div>
             ))
           )}
 
-          {/* View All Button */}
-          {comments.length > 2 && !viewAll && (
+          {comments.length > 2 && !viewAll && expanded && (
             <button
               onClick={() => setViewAll(true)}
               style={{
@@ -619,79 +698,167 @@ function RestaurantComments({
                 background: "#6c757d",
                 color: "white",
                 border: "none",
-                padding: "10px",
-                borderRadius: "8px",
+                padding: "12px",
+                borderRadius: "12px",
                 fontSize: "14px",
                 cursor: "pointer",
                 marginBottom: "15px",
-                transition: "background 0.2s",
+                transition: "all 0.2s ease",
+                fontWeight: "500",
+                boxShadow: "0 2px 4px rgba(108,117,125,0.2)",
               }}
-              onMouseEnter={(e) =>
-                (e.currentTarget.style.background = "#5a6268")
-              }
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.background = "#6c757d")
-              }
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "#5a6268";
+                e.currentTarget.style.transform = "translateY(-1px)";
+                e.currentTarget.style.boxShadow =
+                  "0 4px 8px rgba(108,117,125,0.3)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "#6c757d";
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow =
+                  "0 2px 4px rgba(108,117,125,0.2)";
+              }}
             >
               View All {comments.length} Comments
             </button>
           )}
 
-          {/* Add Comment Form */}
-          <form onSubmit={handleSubmitComment}>
-            <textarea
-              value={commentText}
-              onChange={(e) => onCommentChange(e.target.value)}
-              placeholder={`Write something about ${restaurantName}...`}
-              rows={3}
-              style={{
-                width: "100%",
-                padding: "12px",
-                border: "1px solid #ced4da",
-                borderRadius: "12px",
-                fontSize: "14px",
-                resize: "vertical",
-                marginBottom: "15px",
-                fontFamily: "inherit",
-              }}
-            />
-            <div
-              style={{
-                display: "flex",
-                gap: "10px",
-                justifyContent: "flex-end",
-              }}
-            >
-              <button
-                type="submit"
-                disabled={
-                  createCommentMutation.isPending || !commentText.trim()
-                }
+          {me ? (
+            <form onSubmit={handleSubmitComment}>
+              <textarea
+                value={commentText}
+                onChange={(e) => onCommentChange(e.target.value)}
+                placeholder={`Write something about ${restaurantName}...`}
+                rows={3}
                 style={{
-                  background: "#28a745",
-                  color: "white",
-                  border: "none",
-                  padding: "8px 16px",
-                  borderRadius: "10px",
+                  width: "100%",
+                  padding: "12px",
+                  border: "2px solid #e9ecef",
+                  borderRadius: "12px",
                   fontSize: "14px",
-                  cursor: "pointer",
-                  transition: "background 0.2s",
+                  resize: "vertical",
+                  marginBottom: "15px",
+                  fontFamily: "inherit",
+                  transition: "all 0.2s ease",
+                  outline: "none",
                 }}
-                onMouseEnter={(e) => {
-                  if (!createCommentMutation.isPending && commentText.trim())
-                    e.currentTarget.style.background = "#218838";
+                onFocus={(e) => {
+                  e.currentTarget.style.borderColor = "#007bff";
+                  e.currentTarget.style.boxShadow =
+                    "0 0 0 3px rgba(0,123,255,0.1)";
                 }}
-                onMouseLeave={(e) => {
-                  if (!createCommentMutation.isPending && commentText.trim())
-                    e.currentTarget.style.background = "#28a745";
+                onBlur={(e) => {
+                  e.currentTarget.style.borderColor = "#e9ecef";
+                  e.currentTarget.style.boxShadow = "none";
+                }}
+              />
+              <div
+                style={{
+                  display: "flex",
+                  gap: "10px",
+                  justifyContent: "flex-end",
                 }}
               >
-                {createCommentMutation.isPending
-                  ? "Posting..."
-                  : "Post Comment"}
-              </button>
+                <button
+                  type="submit"
+                  disabled={
+                    createCommentMutation.isPending || !commentText.trim()
+                  }
+                  style={{
+                    background:
+                      createCommentMutation.isPending || !commentText.trim()
+                        ? "#6c757d"
+                        : "#28a745",
+                    color: "white",
+                    border: "none",
+                    padding: "10px 20px",
+                    borderRadius: "12px",
+                    fontSize: "14px",
+                    cursor:
+                      createCommentMutation.isPending || !commentText.trim()
+                        ? "not-allowed"
+                        : "pointer",
+                    transition: "all 0.2s ease",
+                    fontWeight: "500",
+                    boxShadow:
+                      createCommentMutation.isPending || !commentText.trim()
+                        ? "none"
+                        : "0 2px 4px rgba(40,167,69,0.2)",
+                    opacity:
+                      createCommentMutation.isPending || !commentText.trim()
+                        ? 0.6
+                        : 1,
+                  }}
+                  onMouseEnter={(e) => {
+                    if (
+                      !createCommentMutation.isPending &&
+                      commentText.trim()
+                    ) {
+                      e.currentTarget.style.background = "#218838";
+                      e.currentTarget.style.transform = "translateY(-1px)";
+                      e.currentTarget.style.boxShadow =
+                        "0 4px 8px rgba(40,167,69,0.3)";
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (
+                      !createCommentMutation.isPending &&
+                      commentText.trim()
+                    ) {
+                      e.currentTarget.style.background = "#28a745";
+                      e.currentTarget.style.transform = "translateY(0)";
+                      e.currentTarget.style.boxShadow =
+                        "0 2px 4px rgba(40,167,69,0.2)";
+                    }
+                  }}
+                >
+                  {createCommentMutation.isPending
+                    ? "Posting..."
+                    : "Post Comment"}
+                </button>
+              </div>
+            </form>
+          ) : (
+            <div
+              style={{
+                textAlign: "center",
+                padding: "25px 20px",
+                background: "linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)",
+                borderRadius: "16px",
+                border: "2px solid #90caf9",
+                margin: "15px 0",
+              }}
+            >
+              <img
+                src="/icons/profile.png"
+                alt="Sign in"
+                width={36}
+                height={36}
+                style={{ opacity: 0.7, marginBottom: "12px" }}
+              />
+              <p
+                style={{
+                  margin: "0 0 10px 0",
+                  color: "#1976d2",
+                  fontSize: "16px",
+                  fontWeight: "600",
+                }}
+              >
+                Sign in to leave a comment
+              </p>
+              <p
+                style={{
+                  margin: 0,
+                  color: "#42a5f5",
+                  fontSize: "14px",
+                  lineHeight: "1.4",
+                }}
+              >
+                Join the conversation and share your experience
+              </p>
             </div>
-          </form>
+          )}
         </>
       )}
     </div>

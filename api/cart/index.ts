@@ -1,22 +1,19 @@
 import { ICartItem } from "@/types/cart";
 import { customAxios } from "../instances";
 
-// GET /cart
 export const getCart = async (): Promise<ICartItem[]> => {
   const { data } = await customAxios.get("/cart");
-  return data; // massiv qaytadi
+  return data;
 };
 
-// POST /cart/add
 export const addToCart = async (payload: {
   menuId: string;
   quantity: number;
 }): Promise<ICartItem> => {
   const { data } = await customAxios.post("/cart/add", payload);
-  return data; // bitta item qaytadi
+  return data;
 };
 
-// PATCH /cart/update
 export const updateCart = async (payload: {
   menuId: string;
   quantity: number;
@@ -25,7 +22,6 @@ export const updateCart = async (payload: {
   return data;
 };
 
-// DELETE /cart/:menuId
 export const removeFromCart = async (menuId: string): Promise<void> => {
   await customAxios.delete(`/cart/${menuId}`);
 };

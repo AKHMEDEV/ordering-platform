@@ -161,7 +161,7 @@ const Basket: React.FC = () => {
           </Row>
           <PrimaryButton disabled={items.length === 0}>
             <img
-              src="/icons/payment-card.png"
+              src="/icons/credit-card.png"
               width={18}
               height={18}
               alt="pay"

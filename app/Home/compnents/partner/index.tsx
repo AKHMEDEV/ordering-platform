@@ -5,10 +5,10 @@ import { StyledPartners } from "./Partner.styles";
 
 const Partners = () => {
   return (
-    <StyledPartners className="container">
-      <div className="header">
+    <StyledPartners>
+      {/* <div className="header">
         <h2>Team Up and Chances</h2>
-      </div>
+      </div> */}
 
       <div className="cardsWrapper">
         <PartnerCard

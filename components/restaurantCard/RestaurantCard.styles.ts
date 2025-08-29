@@ -21,10 +21,10 @@ export const StyledCard = styled.div`
   a {
     text-decoration: none;
     display: flex;
-    flex-direction: column; /* elementlarni ustma-ust qo'yadi */
+    flex-direction: column;
     height: 100%;
     color: inherit;
-    flex: 1; /* kartani to'ldiradi */
+    flex: 1;
   }
 
   .restaurant-image {
@@ -41,7 +41,7 @@ export const StyledCard = styled.div`
   }
 
   .restaurant-name {
-    margin-top: auto; /* pastga yopishtiradi */
+    margin-top: auto;
     height: 25%;
     display: flex;
     align-items: center;
@@ -50,5 +50,21 @@ export const StyledCard = styled.div`
     font-size: 18px;
     color: #fff;
     background-color: #ff9b00;
+  }
+
+  /* Media query for phones */
+  @media (max-width: 480px) {
+    width: 320px; /* kartani toraytirish */
+    min-height: 280px;
+    margin-bottom: 10px;
+
+    .restaurant-image {
+      height: 80%; /* rasm balandligini kichraytirish */
+    }
+
+    .restaurant-name {
+      font-size: 14px; /* shrift kichrayadi */
+      height: 20%;
+    }
   }
 `;

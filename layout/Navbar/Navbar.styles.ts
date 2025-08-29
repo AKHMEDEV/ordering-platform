@@ -113,10 +113,11 @@ export const StyledNavbar = styled.div`
 
   .navButton {
     text-decoration: none;
-    color: #ffffff;
+    color: #454545;
     background-color: #ffff;
     padding: 8px 20px;
     border-radius: 20px;
+    border-color: #34495e;
     font-weight: 600;
     display: inline-flex;
     align-items: center;
@@ -126,6 +127,7 @@ export const StyledNavbar = styled.div`
 
   .navButton:hover {
     background-color: #34495e;
+    color: white;
     transform: translateY(-2px) scale(1.05);
   }
 

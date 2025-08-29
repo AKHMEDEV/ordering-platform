@@ -18,6 +18,10 @@ const RestaurantCard: React.FC<RestaurantCardProps> = ({ name, img, link }) => {
   const displayImage =
     img && typeof img !== "string" ? img.src : img || DEFAULT_IMAGE.src;
 
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    e.currentTarget.src = DEFAULT_IMAGE.src;
+  };
+
   return (
     <StyledCard>
       <a href={link} target="_blank" rel="noopener noreferrer">
@@ -25,8 +29,12 @@ const RestaurantCard: React.FC<RestaurantCardProps> = ({ name, img, link }) => {
           className="restaurant-image"
           src={displayImage}
           alt={displayName}
+          onError={handleImageError}
+          loading="lazy"
         />
-        <div className="restaurant-name">{displayName}</div>
+        <div className="restaurant-name" title={displayName}>
+          {displayName}
+        </div>
       </a>
     </StyledCard>
   );

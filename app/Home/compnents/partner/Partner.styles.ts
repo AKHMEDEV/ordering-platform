@@ -12,7 +12,25 @@ export const StyledPartners = styled.div`
   }
 
   .cardsWrapper {
+    margin-top: 5vh;
     display: flex;
     gap: 25px;
+    margin-bottom: 5vh;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+  }
+
+  @media (max-width: 992px) {
+    .header h2 {
+      font-size: 24px;
+      text-align: center;
+    }
+
+    .cardsWrapper {
+      gap: 16px;
+      margin: 15px;
+    }
   }
 `;

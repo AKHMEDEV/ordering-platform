@@ -2,12 +2,12 @@ import styled from "styled-components";
 
 export const CardContainer = styled.div<{ $bg: string }>`
   position: relative;
-  width: 650px;
-  height: 380px;
+  width: 590px;
+  height: 340px;
   background-image: url(${(props) => props.$bg});
   background-size: cover;
   background-position: center;
-  border-radius: 10px;  
+  border-radius: 14px;  
   overflow: hidden;
   transition: all 0.3s ease;
 
