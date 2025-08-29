@@ -1,18 +1,21 @@
-import { IBaseResponse, IUser } from "@/types/auth";
+import { IUserProfile } from "@/types/profile";
 import { customAxios } from "../instances";
 
-export const getMe = async () => {
-  const { data } = await customAxios.get<IBaseResponse<IUser>>("/users/me", {
-    withCredentials: true,
-  });
-  return data.data; 
+export const getMe = async (): Promise<IUserProfile> => {
+  const { data } = await customAxios.get<{
+    message: string;
+    data: IUserProfile;
+  }>("/users/me", { withCredentials: true });
+  return data.data;
 };
 
-export const updateUser = async (userId: string, payload: Partial<IUser>) => {
-  const { data } = await customAxios.put<IBaseResponse<IUser>>(
-    `/users/${userId}`,
-    payload,
-    { withCredentials: true }
-  );
+export const updateUser = async (
+  userId: string,
+  payload: Partial<IUserProfile>
+): Promise<IUserProfile> => {
+  const { data } = await customAxios.put<{
+    message: string;
+    data: IUserProfile;
+  }>(`/users/${userId}`, payload, { withCredentials: true });
   return data.data;
 };

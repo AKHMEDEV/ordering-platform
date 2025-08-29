@@ -7,26 +7,20 @@ import {
   ILoginResponse,
   IRegisterPayload,
   IRegisterResponse,
-  IUser,
 } from "@/types/auth";
 import { getMe, updateUser } from "@/api/user";
-import { IGetMeResponse, IUserProfile } from "@/types/profile";
+import { IUserProfile } from "@/types/profile";
 
 
 export const useMe = () => {
   return useQuery<IUserProfile>({
     queryKey: ["me"],
-    queryFn: async () => {
-      const res: IGetMeResponse = await getMe();
-      return res.data;
-    },
+    queryFn: getMe,
     retry: false,
     staleTime: 0,
     refetchOnWindowFocus: true,
   });
 };
-
-
 
 export const useUpdateUser = () => {
   const qc = useQueryClient();
@@ -37,9 +31,9 @@ export const useUpdateUser = () => {
       payload,
     }: {
       userId: string;
-      payload: Partial<IUser>;
+      payload: Partial<IUserProfile>;
     }) => updateUser(userId, payload),
-    onSuccess: (updatedUser: IUser) => {
+    onSuccess: (updatedUser: IUserProfile) => {
       qc.setQueryData(["me"], updatedUser);
     },
     onError: (err) => {
@@ -48,7 +42,6 @@ export const useUpdateUser = () => {
   });
 };
 
-// Register
 export const useRegister = (onSuccessCallback?: () => void) => {
   const router = useRouter();
   const qc = useQueryClient();
@@ -70,7 +63,6 @@ export const useRegister = (onSuccessCallback?: () => void) => {
   });
 };
 
-// Login
 export const useLogin = () => {
   const qc = useQueryClient();
   const router = useRouter();
@@ -95,8 +87,6 @@ export const useLogin = () => {
   });
 };
 
-
-// Logout
 export const useLogout = () => {
   const qc = useQueryClient();
 
