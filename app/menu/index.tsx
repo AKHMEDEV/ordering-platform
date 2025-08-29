@@ -1,6 +1,7 @@
 "use client";
 import { useMenus, useMenuLike } from "@/hook/useMenus";
 import { useState, useMemo } from "react";
+import { useAddToCart } from "@/hook/useCart";
 import { getImageUrl } from "@/utils/getImageUrl";
 import { IMenu } from "@/types/menus";
 
@@ -188,6 +189,7 @@ export default function MenusPage() {
 
 function MenuCard({ menu }: { menu: IMenu }) {
   const { liked, likeCount, toggle } = useMenuLike(menu);
+  const addToCart = useAddToCart();
 
   const primaryImage: string | null =
     Array.isArray(menu.images) && menu.images.length > 0
@@ -352,6 +354,7 @@ function MenuCard({ menu }: { menu: IMenu }) {
 
           {/* Add to Cart */}
           <button
+            onClick={() => addToCart.mutate({ menuId: menu.id, quantity: 1 })}
             style={{
               background: menu.isAvailable ? "#2563eb" : "#9ca3af",
               color: "#fff",
