@@ -73,12 +73,12 @@ const NavbarLayout: React.FC = () => {
                 <li className="navItem">
                   <Prof onClick={() => router.push("/profile")}>
                     <img
-                      src="/icons/profile.png"
+                      src="/icons/profile2.png"
                       alt="Profile"
                       style={{
-                        width: "24px",
-                        height: "24px",
-                        objectFit: "contain",
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
                       }}
                     />
                   </Prof>

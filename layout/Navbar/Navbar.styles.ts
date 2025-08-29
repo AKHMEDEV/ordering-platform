@@ -102,7 +102,7 @@ export const StyledNavbar = styled.div`
   .navButton {
     text-decoration: none;
     color: #ffffff;
-    background-color: #2c3e50;
+    background-color: #ffff;
     padding: 8px 20px;
     border-radius: 20px;
     font-weight: 600;
@@ -121,15 +121,15 @@ export const StyledNavbar = styled.div`
     display: flex;
     align-items: center;
     padding: 6px;
-    border: 1px solid;
+    border: 1px solid white;
     border-radius: 50%;
-  
+
     transition: background-color 0.6s ease, transform 0.2s ease;
   }
 
   .basketIcon {
-    width: 24px;
-    height: 24px;
+    width: 28px;
+    height: 28px;
     filter: invert(28%) sepia(20%) saturate(1000%) hue-rotate(190deg)
       brightness(90%) contrast(85%);
     object-fit: contain;
@@ -148,22 +148,19 @@ export const StyledNavbar = styled.div`
   }
 
   .activeBasket {
-    background-color: #e67e22;
+    background-color: #ff9b00;
     transition: background-color 0.6s ease;
   }
 
   .activeBasket .basketIcon {
     filter: brightness(0) invert(1);
   }
-
-
 `;
 
 
 export const Prof = styled.div`
   width: 40px;
   height: 40px;
-  border: 1px solid black;
   border-radius: 50%;
   background-color: white;
   display: flex;
@@ -171,4 +168,10 @@ export const Prof = styled.div`
   justify-content: center;
   cursor: pointer;
   overflow: hidden;
+  transition: background-color 0.6s ease, transform 0.2s ease; /* qo'shildi */
+
+  &:hover {
+    background-color: #ff9b00; /* basket hover'iga o‘xshash rang */
+    transform: scale(1.1  );
+  }
 `;
